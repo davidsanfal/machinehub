@@ -1,0 +1,27 @@
+.navbar-brand-machinehub {
+  float: left;
+  height: 50px;
+  padding: 0px 15px;
+  font-size: 18px;
+  line-height: 20px;
+}
+
+img.machinehub {
+	max-width: 50%;
+}
+
+.stl-viewr {
+	height:600px;
+	min-width:100%;
+	min-height:100%;
+}
+
+.range_result {
+	margin-top: 10px;
+    margin-bottom: 20px;
+    margin-left: auto;
+  	margin-right: auto;
+	height:26px;
+	width:174px;
+	border:1px solid #999
+}

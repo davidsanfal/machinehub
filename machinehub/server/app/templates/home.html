@@ -1,0 +1,12 @@
+{% extends "base/layout.html" %}
+{% block content %}
+    <div class="container text-center">
+	    <div class="jumbotron">
+	      	<h1>Machinehub</h1>
+	      	<br>
+	      	<a href="{{ url_for('MachinehubController:machines', page=1) }}">
+	      		<img src= {{ url_for('static', filename = 'img/machinehub_logo.png') }} class="img-responsive-center machinehub">
+	      	</a>
+      	</div>
+    </div>
+{% endblock %}
