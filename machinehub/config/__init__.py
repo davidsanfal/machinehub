@@ -23,7 +23,8 @@ sys.path.append(MACHINEHUB_FOLDER)
 machinehubconfig_path = os.path.join(machinehub_path, MACHINEHUBCONF)
 config = None
 if not os.path.exists(machinehubconfig_path):
-    os.makedirs(machinehub_path)
+    if not os.path.exists(machinehub_path):
+        os.makedirs(machinehub_path)
     with open(machinehubconfig_path, "w+") as f:
         f.write(default_machinehubconf)
 
