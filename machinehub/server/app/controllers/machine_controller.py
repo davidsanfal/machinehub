@@ -12,8 +12,7 @@ from machinehub.server.app.models.machine_model import MachineModel
 from machinehub.server.app.controllers.form_generator import metaform
 
 
-types = {'string': str,
-         'int': int,
+types = {'int': int,
          'float': float}
 
 
@@ -43,7 +42,6 @@ class MachineController(FlaskView):
                         values[name] = types[_type](value.data)
                     else:
                         values[name] = value.data
-                flash('CREATING!', 'success')
                 current_folder = os.getcwd()
                 os.chdir(UPLOAD_FOLDER)
                 file_name = fn(**values)

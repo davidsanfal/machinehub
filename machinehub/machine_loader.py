@@ -121,9 +121,9 @@ class DocMachine(object):
 class InputsMachine(object):
     def __init__(self, lines):
         self.inputs = []
-        patterns = ("^([a-z_]*)\(([a-zA-Z0-9_,.=]*)\)",
-                    "^([a-z_]*)\(([a-zA-Z0-9_,.=]*) *, *\(([a-zA-Z0-9_,.:]*)\)\)",
-                    "^([a-z_]*)\(([a-zA-Z0-9_,.=]*) *, *\[([a-zA-Z0-9_,.]*)\]\)")
+        patterns = ("^([a-z_]*)\(([a-zA-Z0-9_,.=\"\']*)\)",
+                    "^([a-z_]*)\(([a-zA-Z0-9_,.=\"\']*) *, *\(([a-zA-Z0-9_,.:\"\']*)\)\)",
+                    "^([a-z_]*)\(([a-zA-Z0-9_,.=\"\']*) *, *\[([a-zA-Z0-9_,.\"\']*)\]\)")
         pattern = re.compile("|".join(patterns))
         for line in lines:
             m = pattern.match(line)
