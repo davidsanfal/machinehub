@@ -42,4 +42,18 @@ class MachinehubController(FlaskView):
 
     @route('/')
     def index(self):
-        return render_template('home.html')
+        machines_info = []
+        machines = self.machines_model.get_last_machines()
+        for name, doc in machines:
+            url = url_for('MachineController:machine', machine_name=name)
+            image = doc.images[0] if doc.images else None
+            machines_info.append((image, doc.title or "", doc.description or "", url))
+
+        def chunks(l, n):
+            """Yield successive n-sized chunks from l."""
+            for i in xrange(0, len(l), n):
+                yield l[i:i+n]
+        splited_machines_info = list(chunks(machines_info, 4))
+
+        return render_template('home.html',
+                               splited_machines_info=splited_machines_info)

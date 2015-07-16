@@ -29,7 +29,6 @@ class MachineModel(object):
                                         'inputs': inputs}
             except NotMachineHub:
                 continue
-            
 
     @property
     def all_machines(self):
@@ -77,5 +76,14 @@ class MachineModel(object):
             else self._machines.keys()[origin:]
         info = []
         for machine in machines:
+            info.append((machine, self._machines[machine]['doc']))
+        return info
+
+    def get_last_machines(self):
+        info = []
+        origin = 0
+        if self.count > 7:
+            origin = self.count-8
+        for machine in self._machines.keys()[origin:]:
             info.append((machine, self._machines[machine]['doc']))
         return info
