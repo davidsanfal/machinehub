@@ -102,6 +102,6 @@ def metaform(name, inputs):
             _SingleField = single_input_type[_type]
             setattr(MetaForm, name, _SingleField(name,
                                                  validators=[validators.input_required()],
-                                                 default=default))
+                                                 default=types[_type](default)))
 
     return MetaForm
