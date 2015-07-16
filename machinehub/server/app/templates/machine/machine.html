@@ -16,7 +16,7 @@
 	        thingiview.setObjectColor('#C0D8F0');
 	        thingiview.initScene();
 	        thingiview.setRotation(false);
-	        thingiview.loadSTL("{{ url_for('MachineController:download', filename=file_name) }}");
+	        thingiview.loadSTL("{{ url_for('MachinehubController:download', filename=file_name) }}");
 	      }
 		</script>
 
@@ -89,7 +89,7 @@
 		</div>
 		<div class="container text-center">
 			{% if show_stl %}
-			<a name="viewer" style="text-align:center;" href="{{ url_for('MachineController:download', filename=file_name) }}" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-download-alt"></span> Download the generated STL</a><br><br>
+			<a name="viewer" style="text-align:center;" href="{{ url_for('MachinehubController:download', filename=file_name) }}" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-download-alt"></span> Download the generated STL</a><br><br>
 			<p>
 				<input class="btn btn-primary" onclick="thingiview.setCameraView('top');" type="button" value="Top" /> 
 				<input class="btn btn-primary" onclick="thingiview.setCameraView('side');" type="button" value="Side" /> 

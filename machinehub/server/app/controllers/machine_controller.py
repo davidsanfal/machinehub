@@ -1,15 +1,12 @@
 from flask.globals import request
-from flask.helpers import flash, send_from_directory, url_for
 import os
-from werkzeug.utils import redirect
 from flask_classy import route, FlaskView
 from flask.templating import render_template
-from machinehub.server.app.controllers import resources
-from machinehub.errors import NotMachineHub
 from machinehub.server.app.controllers.auth_controller import requires_auth
-from machinehub.config import MACHINEHUB_FOLDER, UPLOAD_FOLDER
+from machinehub.config import UPLOAD_FOLDER
 from machinehub.server.app.models.machine_model import MachineModel
 from machinehub.server.app.controllers.form_generator import metaform
+from flask.helpers import flash
 
 
 types = {'int': int,
@@ -57,20 +54,3 @@ class MachineController(FlaskView):
                                show_stl=show_stl,
                                file_name=file_name,
                                machine_name=machine_name)
-
-    @route('/download/<filename>')
-    def download(self, filename):
-        return send_from_directory(UPLOAD_FOLDER, filename)
-
-    @route('/upload', methods=['GET', 'POST'])
-    def upload(self):
-        if request.method == 'POST':
-            _file = request.files['file']
-            file_path = resources.save(_file, MACHINEHUB_FOLDER, ALLOWED_EXTENSIONS)
-            if file_path:
-                try:
-                    name = self.machines_model.update(file_path)
-                    return redirect(url_for('MachineController:machine', machine_name=name))
-                except NotMachineHub as e:
-                    flash('WARNING! %s' % e.message, 'warning')
-        return render_template('machine/upload.html')
