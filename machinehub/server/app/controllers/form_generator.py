@@ -83,6 +83,8 @@ def metaform(name, inputs):
             step = range_input_type[_type]
             if len(_range) == 3:
                 step = _range[1]
+            if default is None:
+                default = _min
             RangeField = rangeField(step, _min, _max, default)
             setattr(MetaForm, name, RangeField(name,
                                                validators=[validators.input_required()],
@@ -91,7 +93,7 @@ def metaform(name, inputs):
             choices = []
             default_index = 0
             for value in allowed_values:
-                choices.append((value, value))
+                choices.append((filter_str(value), filter_str(value)))
                 if default == value:
                     default_index = value
             setattr(MetaForm, name, SelectField(name,
@@ -100,8 +102,19 @@ def metaform(name, inputs):
                                                 default=default_index))
         elif _type in single_input_type.keys():
             _SingleField = single_input_type[_type]
+            if default is not None:
+                default = filter_str(types[_type](default))
             setattr(MetaForm, name, _SingleField(name,
                                                  validators=[validators.input_required()],
-                                                 default=types[_type](default)))
+                                                 default=default))
 
     return MetaForm
+
+
+def filter_str(var):
+    result = var
+    if type(var) is str:
+        if (var.startswith('\'') and var.endswith('\'')) or \
+           (var.startswith('\"') and var.endswith('\"')):
+             result = str(var[1:-1].decode('utf-8'))
+    return result
