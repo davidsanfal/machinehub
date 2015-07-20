@@ -7,6 +7,8 @@ from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER
 from machinehub.server.app.models.machine_model import MachineModel
 from machinehub.server.app.controllers.form_generator import metaform
 from machinehub.sha import dict_sha1
+from flask.helpers import flash
+import json
 
 
 types = {'int': int,
@@ -46,9 +48,20 @@ class MachineController(FlaskView):
             file_path = os.path.join(UPLOAD_FOLDER, file_url)
             if not os.path.exists(file_path):
                 values['file_path'] = file_path
-                fn(**values)
-            os.chdir(current_folder)
-            show_stl = True
+#                 a = json.dumps(values)
+#                 print type(a)
+#                 print type(json.loads(a))
+                try:
+                    fn(**values)
+                    show_stl = True
+                except:
+                    flash('There are somthing wrong in that machine. Try to contant with the creator',
+                          category='danger')
+                    show_stl = False
+                finally:
+                    os.chdir(current_folder)
+            else:
+                show_stl = True
         return render_template('machine/machine.html',
                                title=doc.title,
                                description=doc.description,

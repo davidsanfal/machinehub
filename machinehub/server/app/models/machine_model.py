@@ -68,6 +68,7 @@ class MachineModel(object):
                                 'inputs': inputs}
         if not os.path.exists(objects_folder):
             os.makedirs(objects_folder)
+            shutil.copy2(machine_path, objects_folder)
 
     def get_machines_for_page(self, page, per_page, count):
         origin = per_page * (page - 1)
