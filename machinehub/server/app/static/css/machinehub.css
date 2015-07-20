@@ -25,3 +25,58 @@ img.machinehub {
 	width:174px;
 	border:1px solid #999
 }
+
+.carousel-control.left, .carousel-control.right {
+    background-image: none;
+    color: #F09000;
+}
+
+.carousel-indicators li {
+  width:  14px;
+  height: 14px;
+}
+.carousel-indicators .active {
+  width:  16px;
+  height: 16px;
+}
+
+.btn-primary {
+  color: #fff;
+  background-color: #2eaadb;
+  border-color: #2eaadb;
+}
+
+.btn-primary:focus, .btn-primary:hover {
+  color: #fff;
+  background-color: #278fb8;
+  border-color: #278fb8;
+}
+
+
+
+a {
+  color: #2eaadb;
+  text-decoration: none;
+}
+
+a:focus, a:hover {
+  color: #F09000;
+}
+
+.navbar-default {
+  background-color: #ffffff;
+  border-color: #2eaadb;
+}
+
+.navbar-default .navbar-nav>.active>a, .navbar-default .navbar-nav>.active>a:focus, .navbar-default .navbar-nav>.active>a:hover {
+  color: #FFFFFF;
+  background-color: #2eaadb;
+}
+
+.navbar-default .navbar-nav>li>a {
+  color: #474747;
+}
+
+.navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-nav>li>a:hover {
+  color: #F09000;
+}

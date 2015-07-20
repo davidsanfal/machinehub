@@ -2,7 +2,7 @@
 
 
 from machinehub.config import machinehub_conf
-from machinehub.server.app import app
+from machinehub.server.app.webapp import app
 
 
 def main():

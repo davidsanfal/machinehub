@@ -16,10 +16,10 @@ admin: admin
 
 machinehub_path = os.path.join(os.path.expanduser('~'), MACHINEHUB)
 UPLOAD_FOLDER = machinehub_path
-MACHINEHUB_FOLDER = os.path.join(UPLOAD_FOLDER, 'machines')
-if not os.path.exists(MACHINEHUB_FOLDER):
-    os.makedirs(MACHINEHUB_FOLDER)
-sys.path.append(MACHINEHUB_FOLDER)
+MACHINES_FOLDER = os.path.join(UPLOAD_FOLDER, 'machines')
+if not os.path.exists(MACHINES_FOLDER):
+    os.makedirs(MACHINES_FOLDER)
+sys.path.append(MACHINES_FOLDER)
 machinehubconfig_path = os.path.join(machinehub_path, MACHINEHUBCONF)
 config = None
 if not os.path.exists(machinehubconfig_path):

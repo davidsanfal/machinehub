@@ -5,12 +5,13 @@ from machinehub.server.app.controllers.auth_controller import requires_auth
 from machinehub.server.app.models.machine_model import MachineModel
 from werkzeug.exceptions import abort
 from machinehub.server.app.models.explorer_model import Pagination
-from machinehub.config import UPLOAD_FOLDER, MACHINEHUB_FOLDER
+from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER
 from machinehub.server.app.controllers import resources
 from machinehub.errors import NotMachineHub
 from werkzeug.utils import redirect
 from flask.globals import request
 from machinehub.server.app.controllers.machine_controller import ALLOWED_EXTENSIONS
+import os
 
 
 PER_PAGE = 20
@@ -64,7 +65,7 @@ class MachinehubController(FlaskView):
         return render_template('home.html',
                                splited_machines_info=splited_machines_info)
 
-    @route('/download/<filename>')
+    @route('/download/<path:filename>')
     def download(self, filename):
         return send_from_directory(UPLOAD_FOLDER, filename)
 
@@ -72,7 +73,7 @@ class MachinehubController(FlaskView):
     def upload(self):
         if request.method == 'POST':
             _file = request.files['file']
-            file_path = resources.save(_file, MACHINEHUB_FOLDER, ALLOWED_EXTENSIONS)
+            file_path = resources.save(_file, MACHINES_FOLDER, ALLOWED_EXTENSIONS)
             if file_path:
                 try:
                     name = self.machines_model.update(file_path)

@@ -35,5 +35,6 @@ def save(resource, dest, extensions=None, pattern_extensions=None):
             file_path = os.path.join(dest, filename)
             resource.save(file_path)
             return file_path
+        return None
     else:
         raise MachinehubException('Define only one parameter "extensions" or "pattern_extensions"')
