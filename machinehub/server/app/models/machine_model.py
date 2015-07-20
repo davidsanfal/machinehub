@@ -1,6 +1,6 @@
 import glob
 import os
-from machinehub.config import MACHINEHUB_FOLDER
+from machinehub.config import MACHINES_FOLDER
 from machinehub.machine_loader import load_machine
 from machinehub.errors import NotFoundException, NotMachineHub
 import shutil
@@ -20,7 +20,7 @@ class MachineModel(object):
 
     @property
     def search(self):
-        for machine in glob.glob(os.path.join(MACHINEHUB_FOLDER, '*.py')):
+        for machine in glob.glob(os.path.join(MACHINES_FOLDER, '*.py')):
             try:
                 fn, doc, inputs = load_machine(machine)
                 name = os.path.basename(machine).replace('.py', '')
@@ -45,7 +45,7 @@ class MachineModel(object):
         try:
             name = os.path.basename(file_path).replace('.py', '')
             if name in self._machines.keys():
-                shutil.rmtree(os.path.join(MACHINEHUB_FOLDER, name))
+                shutil.rmtree(os.path.join(MACHINES_FOLDER, name))
             self._add(name)
         except NotMachineHub:
             os.remove(file_path)
@@ -60,8 +60,8 @@ class MachineModel(object):
             raise NotFoundException()
 
     def _add(self, name):
-        machine_path = os.path.join(MACHINEHUB_FOLDER, '%s.py' % name)
-        objects_folder = os.path.join(MACHINEHUB_FOLDER, name)
+        machine_path = os.path.join(MACHINES_FOLDER, '%s.py' % name)
+        objects_folder = os.path.join(MACHINES_FOLDER, name)
         fn, doc, inputs = load_machine(machine_path)
         self._machines[name] = {'fn': fn,
                                 'doc': doc,

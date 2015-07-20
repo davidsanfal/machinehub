@@ -17,7 +17,7 @@ def check_machine(machine_file):
             return a, machine_info.doc, machine_info.inputs
         else:
             raise MachinehubException('machinebuilder must be a funcion with docstring')
-    except Exception as e:
+    except KeyError as e:
         logger.info(e.message)
         raise NotMachineHub()
 
@@ -36,7 +36,7 @@ def load_machine(machine_path):
     module_id = uuid.uuid1()
     try:
         loaded = imp.load_source("machine%s" % module_id, machine_path)
-    except Exception:
+    except NotMachineHub:
         import traceback
         trace = traceback.format_exc().split('\n')
         raise MachinehubException("Unable to load machine in %s\n%s" % (machine_path,
@@ -56,7 +56,7 @@ def load_machine_from_source(machine):
     try:
         loaded = imp.new_module("machine%s" % module_id)
         exec machine in loaded.__dict__
-    except Exception as e:
+    except KeyError as e:
         raise MachinehubException("Unable to load machine %s" % e.message)
     try:
         result = check_machine(loaded)
