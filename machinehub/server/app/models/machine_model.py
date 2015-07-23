@@ -59,6 +59,12 @@ class MachineModel(object):
         except:
             raise NotFoundException()
 
+    def delete(self, name):
+        if os.path.exists(os.path.join(MACHINES_FOLDER, name)):
+            shutil.rmtree(os.path.join(MACHINES_FOLDER, name))
+        os.remove(os.path.join(MACHINES_FOLDER, '%s.py' % name))
+        del self._machines[name]
+
     def _add(self, name):
         machine_path = os.path.join(MACHINES_FOLDER, '%s.py' % name)
         objects_folder = os.path.join(MACHINES_FOLDER, name)
