@@ -5,6 +5,7 @@ from flask import request
 from machinehub.server.app.controllers.machine_controller import MachineController
 from machinehub.server.app.controllers.machinehub_controller import MachinehubController
 from machinehub.server.app.models.machine_model import MachineModel
+from flask import render_template
 
 
 def url_for_other_page(page):
@@ -25,3 +26,13 @@ MachineController().register(app)
 
 if UPLOAD_FOLDER:
     app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    return render_template('500.html'), 500

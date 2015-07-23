@@ -8,7 +8,7 @@ from machinehub.server.app.webapp import app
 def main():
     app.run(host=machinehub_conf.server.host,
             port=int(machinehub_conf.server.port),
-            debug=True)
+            debug=False)
 
 
 if __name__ == '__main__':
