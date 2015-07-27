@@ -7,7 +7,7 @@ from werkzeug.exceptions import abort
 from machinehub.server.app.models.explorer_model import Pagination
 from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER
 from machinehub.server.app.controllers import resources
-from machinehub.errors import NotMachineHub
+from machinehub.common.errors import NotMachineHub
 from werkzeug.utils import redirect
 from flask.globals import request
 from machinehub.server.app.controllers.machine_controller import ALLOWED_EXTENSIONS

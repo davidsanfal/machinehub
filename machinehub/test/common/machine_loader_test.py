@@ -1,8 +1,8 @@
 import unittest
 import tempfile
 import os
-from machinehub.machine_loader import load_machine, load_machine_from_source
-from machinehub.errors import NotMachineHub
+from machinehub.common.machine_loader import load_machine, load_machine_from_source
+from machinehub.common.errors import NotMachineHub
 
 
 machine_test = '''

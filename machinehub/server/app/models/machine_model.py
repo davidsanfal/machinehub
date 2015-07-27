@@ -1,8 +1,8 @@
 import glob
 import os
 from machinehub.config import MACHINES_FOLDER
-from machinehub.machine_loader import load_machine
-from machinehub.errors import NotFoundException, NotMachineHub
+from machinehub.common.machine_loader import load_machine
+from machinehub.common.errors import NotFoundException, NotMachineHub
 import shutil
 
 

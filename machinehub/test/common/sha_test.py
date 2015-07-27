@@ -1,5 +1,5 @@
 import unittest
-from machinehub.sha import dict_sha1
+from machinehub.common.sha import dict_sha1
 from time import sleep
 
 
