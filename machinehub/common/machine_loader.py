@@ -1,10 +1,10 @@
-from machinehub.errors import MachinehubException, NotMachineHub
+from machinehub.common.errors import MachinehubException, NotMachineHub
 import uuid
 import imp
 import os
 import inspect
 import re
-from machinehub.machinehub_logging import logger
+from machinehub.common.machinehub_logging import logger
 
 
 def check_machine(machine_file):

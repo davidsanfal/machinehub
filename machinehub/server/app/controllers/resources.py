@@ -1,7 +1,7 @@
 import fnmatch
 from werkzeug.utils import secure_filename
 import os
-from machinehub.errors import MachinehubException
+from machinehub.common.errors import MachinehubException
 
 
 def allowed_file(filename, allowed_extension):

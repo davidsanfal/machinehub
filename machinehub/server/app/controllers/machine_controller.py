@@ -6,7 +6,7 @@ from machinehub.server.app.controllers.auth_controller import requires_auth
 from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER
 from machinehub.server.app.models.machine_model import MachineModel
 from machinehub.server.app.controllers.form_generator import metaform
-from machinehub.sha import dict_sha1
+from machinehub.common.sha import dict_sha1
 from flask.helpers import url_for
 from werkzeug.utils import redirect
 
