@@ -1,0 +1,13 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<div class="container text-center">
+	<div class="jumbotron white">
+		<h1>Ups! Page not found</h1>
+		<br>
+		<a href="{{ url_for('MachinehubController:index') }}">
+			<img src= {{ url_for('static', filename = 'img/error.jpg') }} class="img-responsive-center">
+		</a>
+		
+	</div>
+</div>
+{% endblock %}

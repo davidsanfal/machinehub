@@ -11,7 +11,6 @@ from machinehub.errors import NotMachineHub
 from werkzeug.utils import redirect
 from flask.globals import request
 from machinehub.server.app.controllers.machine_controller import ALLOWED_EXTENSIONS
-import os
 
 
 PER_PAGE = 20

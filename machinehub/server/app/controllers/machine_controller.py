@@ -7,6 +7,8 @@ from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER
 from machinehub.server.app.models.machine_model import MachineModel
 from machinehub.server.app.controllers.form_generator import metaform
 from machinehub.sha import dict_sha1
+from flask.helpers import url_for
+from werkzeug.utils import redirect
 
 
 types = {'int': int,
@@ -24,12 +26,15 @@ class MachineController(FlaskView):
     def __init__(self):
         self.machines_model = MachineModel()
 
-    @route('/<machine_name>', methods=['GET', 'POST'])
+    @route('/<machine_name>', methods=['GET', 'POST', 'DELETE'])
     def machine(self, machine_name):
         show_stl = False
         fn, doc, inputs = self.machines_model.machine(machine_name)
         form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
         file_url = ""
+        if request.method == 'DELETE':
+            self.machines_model.delete(machine_name)
+            return redirect(url_for('MachinehubController:index'))
         if request.method == 'POST' and form.validate():
             values = {}
             for name, _type, _, _, _ in inputs:
