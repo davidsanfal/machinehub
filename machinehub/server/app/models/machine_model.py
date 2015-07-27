@@ -11,14 +11,13 @@ class MachineModel(object):
 
     def __init__(self):
         self._machines = {}
-        self.search
+        self.search()
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(MachineModel, cls).__new__(cls, *args, **kwargs)
         return cls._instance
 
-    @property
     def search(self):
         for machine in glob.glob(os.path.join(MACHINES_FOLDER, '*.py')):
             try:
