@@ -49,7 +49,7 @@ class MachineController(FlaskView):
                                     machine_name,
                                     '%s_%s.stl' % (machine_name, dict_sha1(values)))
             file_path = os.path.join(UPLOAD_FOLDER, file_url)
-            if not os.path.exists(file_path):
+            if not os.path.exists(file_path) or not values:
                 values['file_path'] = file_path
                 fn(**values)
             os.chdir(current_folder)
