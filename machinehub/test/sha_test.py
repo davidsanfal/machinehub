@@ -18,6 +18,6 @@ class DictShaTest(unittest.TestCase):
         self.assertEqual(dict_sha1(dict3),
                          '60966e549ed6ef2bdaaff8e8b76bd6bd7864351b')
         id1 = dict_sha1({})
-        sleep(1)
+        sleep(1/60)
         id2 = dict_sha1({})
         self.assertNotEqual(id1, id2)

@@ -2,6 +2,7 @@ import unittest
 import tempfile
 import os
 from machinehub.machine_loader import load_machine, load_machine_from_source
+from machinehub.errors import NotMachineHub
 
 
 machine_test = '''
@@ -40,6 +41,18 @@ int(height)
     doc.recompute()
 '''
 
+no_machine_test = '''
+import sys
+FREECADPATH = '/usr/lib/freecad/lib/'
+sys.path.append(FREECADPATH)
+import FreeCAD
+import Draft
+import Mesh
+
+def machine_builder(text, size, height, file_path):
+    pass
+'''
+
 
 class LoaderTest(unittest.TestCase):
 
@@ -71,3 +84,10 @@ class LoaderTest(unittest.TestCase):
                           ['size', 'int', None, [], []],
                           ['height', 'int', None, [], []]])
 
+    def simple_loader_exception_test(self):
+        tmp_folder = tempfile.mkdtemp(prefix='machinehub')
+        machine_path = os.path.join(tmp_folder, 'supermachine.py')
+        with open(machine_path, "w+") as f:
+            f.write(no_machine_test)
+        self.assertRaises(NotMachineHub, load_machine, machine_path)
+        self.assertRaises(NotMachineHub, load_machine_from_source, no_machine_test)
