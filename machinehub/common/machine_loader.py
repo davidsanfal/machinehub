@@ -71,6 +71,7 @@ class MachineParser(object):
         self.inputs = None
         doc_lines = []
         inputs_lines = []
+        outputs_lines = []
         pattern = re.compile("^\[([a-z_]{2,50})\]")
         current_lines = []
         for line in text.splitlines():
@@ -85,12 +86,15 @@ class MachineParser(object):
                     doc_lines = current_lines
                 elif group == 'inputs':
                     inputs_lines = current_lines
+                elif group == 'outputs':
+                    outputs_lines = current_lines
                 else:
                     raise MachinehubException("MachineParser: Unrecognized field '%s'" % group)
             else:
                 current_lines.append(line)
         self.doc = DocMachine(doc_lines)
         self.inputs = InputsMachine(inputs_lines).inputs
+        self.outputs = OutputsMachine(outputs_lines)
 
 
 class DocMachine(object):
@@ -110,8 +114,6 @@ class DocMachine(object):
                     description = current_lines
                 elif group == 'images_url':
                     self.images = current_lines
-                else:
-                    raise MachinehubException("SectionParser: Unrecognized field '%s'" % group)
             else:
                 current_lines.append(line)
         self.title = '\n'.join(title)
@@ -154,3 +156,18 @@ class InputsMachine(object):
                 else:
                     name = var[0]
                 self.inputs.append([name, _type, default, _range, allowed_values])
+
+
+class OutputsMachine(object):
+    def __init__(self, lines):
+        self.extensions = ['stl']
+        pattern = re.compile("^\-([a-z_]{2,50})\-")
+        for line in lines:
+            m = pattern.match(line)
+            if m:
+                group = m.group(1)
+                current_lines = []
+                if group == 'extensions':
+                    self.extensions = current_lines
+            else:
+                current_lines.append(line)

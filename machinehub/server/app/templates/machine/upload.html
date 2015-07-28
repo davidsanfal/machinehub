@@ -1,15 +1,14 @@
 {% extends "base/layout.html" %}
 {% block content %}
 	<div class="container text-center">
-		<form action="{{ url_for('MachinehubController:upload') }}" method=post enctype=multipart/form-data  role="form">
-			 <div class="form-group">
-			 	<label for="ejemplo_archivo_1">Add a new machine file!</label>
-			 	<br>
-			 	<br>
-				<input type=file name=file style="  margin: auto;">
+		<form method="POST" enctype="multipart/form-data" role="form" action="{{ url_for('MachinehubController:upload') }}">
+			<div class="form-group">
+				<br>
+				<br>
+				<input type="file" name="file[]" multiple="" style="margin: auto;">
 				<br>
 				<button type="submit" class="btn btn-sm btn-primary">Upload file</button>
 			</div>
-	</form>
+		</form>
 	</div>
 {% endblock %}
