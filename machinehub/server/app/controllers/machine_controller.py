@@ -33,6 +33,7 @@ class MachineController(FlaskView):
         form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
         file_url = ""
         if request.method == 'DELETE':
+            # $.ajax({ url:"machine/cheese-generator", type: "DELETE" })
             self.machines_model.delete(machine_name)
             return redirect(url_for('MachinehubController:index'))
         if request.method == 'POST' and form.validate():
