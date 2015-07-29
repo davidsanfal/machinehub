@@ -3,7 +3,7 @@ import os
 from flask_classy import route, FlaskView
 from flask.templating import render_template
 from machinehub.server.app.controllers.auth_controller import requires_auth
-from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER
+from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER, MACHINESOUT
 from machinehub.server.app.models.machine_model import MachineModel
 from machinehub.server.app.controllers.form_generator import metaform
 from machinehub.common.sha import dict_sha1
@@ -15,7 +15,7 @@ types = {'int': int,
          'float': float}
 
 
-ALLOWED_EXTENSIONS = ['py']
+ALLOWED_EXTENSIONS = ['py', 'zip']
 
 
 class MachineController(FlaskView):
@@ -33,6 +33,7 @@ class MachineController(FlaskView):
         form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
         file_url = ""
         if request.method == 'DELETE':
+            # $.ajax({ url:"machine/cheese-generator", type: "DELETE" })
             self.machines_model.delete(machine_name)
             return redirect(url_for('MachinehubController:index'))
         if request.method == 'POST' and form.validate():
@@ -47,6 +48,7 @@ class MachineController(FlaskView):
             os.chdir(os.path.join(MACHINES_FOLDER, machine_name))
             file_url = os.path.join('machines',
                                     machine_name,
+                                    MACHINESOUT,
                                     '%s_%s.stl' % (machine_name, dict_sha1(values)))
             file_path = os.path.join(UPLOAD_FOLDER, file_url)
             if not os.path.exists(file_path) or not values:

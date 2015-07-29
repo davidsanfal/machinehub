@@ -6,6 +6,7 @@ import sys
 
 MACHINEHUB = '.machinehub'
 MACHINEHUBCONF = 'machinehub.conf'
+MACHINESOUT = 'machine_out'
 default_machinehubconf = '''
 [server]
 host: 127.0.0.1

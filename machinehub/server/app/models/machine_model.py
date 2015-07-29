@@ -1,9 +1,10 @@
 import glob
 import os
-from machinehub.config import MACHINES_FOLDER
+from machinehub.config import MACHINES_FOLDER, MACHINESOUT
 from machinehub.common.machine_loader import load_machine
 from machinehub.common.errors import NotFoundException, NotMachineHub
 import shutil
+import sys
 
 
 class MachineModel(object):
@@ -19,13 +20,18 @@ class MachineModel(object):
         return cls._instance
 
     def search(self):
-        for machine in glob.glob(os.path.join(MACHINES_FOLDER, '*.py')):
+        machine_folders = [p for p in os.listdir(MACHINES_FOLDER)
+                           if os.path.isdir(os.path.join(MACHINES_FOLDER, p))]
+
+        for name in machine_folders:
             try:
-                fn, doc, inputs = load_machine(machine)
-                name = os.path.basename(machine).replace('.py', '')
-                self._machines[name] = {'fn': fn,
-                                        'doc': doc,
-                                        'inputs': inputs}
+                sys.path.append(os.path.join(MACHINES_FOLDER, name))
+                machine = os.path.join(MACHINES_FOLDER, name, '%s.py' % name)
+                if os.path.exists(machine):
+                    fn, doc, inputs = load_machine(machine)
+                    self._machines[name] = {'fn': fn,
+                                            'doc': doc,
+                                            'inputs': inputs}
             except NotMachineHub:
                 continue
 
@@ -43,11 +49,8 @@ class MachineModel(object):
     def update(self, file_path):
         try:
             name = os.path.basename(file_path).replace('.py', '')
-            if name in self._machines.keys():
-                shutil.rmtree(os.path.join(MACHINES_FOLDER, name))
-            self._add(name)
+            self._add(name, file_path)
         except NotMachineHub:
-            os.remove(file_path)
             raise NotMachineHub()
         return name
 
@@ -61,13 +64,14 @@ class MachineModel(object):
     def delete(self, name):
         if os.path.exists(os.path.join(MACHINES_FOLDER, name)):
             shutil.rmtree(os.path.join(MACHINES_FOLDER, name))
-        os.remove(os.path.join(MACHINES_FOLDER, '%s.py' % name))
         del self._machines[name]
 
-    def _add(self, name):
-        machine_path = os.path.join(MACHINES_FOLDER, '%s.py' % name)
-        objects_folder = os.path.join(MACHINES_FOLDER, name)
+    def _add(self, name, machine_path):
+        objects_folder = os.path.join(MACHINES_FOLDER, name, MACHINESOUT)
         fn, doc, inputs = load_machine(machine_path)
+        if name in self._machines.keys():
+            shutil.rmtree(objects_folder)
+        print name
         self._machines[name] = {'fn': fn,
                                 'doc': doc,
                                 'inputs': inputs}
