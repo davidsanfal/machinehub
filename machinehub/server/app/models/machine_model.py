@@ -1,4 +1,3 @@
-import glob
 import os
 from machinehub.config import MACHINES_FOLDER, MACHINESOUT
 from machinehub.common.machine_loader import load_machine
@@ -18,6 +17,12 @@ class MachineModel(object):
         if not cls._instance:
             cls._instance = super(MachineModel, cls).__new__(cls, *args, **kwargs)
         return cls._instance
+
+    def __contains__(self, machine):
+        if machine in self._machines.keys():
+            return True
+        else:
+            return False
 
     def search(self):
         machine_folders = [p for p in os.listdir(MACHINES_FOLDER)

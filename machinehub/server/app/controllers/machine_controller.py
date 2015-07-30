@@ -7,8 +7,6 @@ from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER, MACHINESOUT
 from machinehub.server.app.models.machine_model import MachineModel
 from machinehub.server.app.controllers.form_generator import metaform
 from machinehub.common.sha import dict_sha1
-from flask.helpers import url_for
-from werkzeug.utils import redirect
 
 
 types = {'int': int,
@@ -26,17 +24,32 @@ class MachineController(FlaskView):
     def __init__(self):
         self.machines_model = MachineModel()
 
-    @route('/<machine_name>', methods=['GET', 'POST', 'DELETE'])
+    @route('/<machine_name>', methods=['GET'])
     def machine(self, machine_name):
         show_stl = False
+        if machine_name not in self.machines_model:
+            return render_template('404.html'), 404
+        _, doc, inputs = self.machines_model.machine(machine_name)
+        form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
+        return render_template('machine/machine.html',
+                               title=doc.title,
+                               description=doc.description,
+                               images=doc.images,
+                               form=form,
+                               show_stl=show_stl,
+                               file_name="",
+                               machine_name=machine_name)
+
+    @route('/<machine_name>', methods=['POST'])
+    def post_machine(self, machine_name):
+        show_stl = False
+        if machine_name not in self.machines_model:
+            return render_template('404.html'), 404
         fn, doc, inputs = self.machines_model.machine(machine_name)
         form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
         file_url = ""
-        if request.method == 'DELETE':
-            # $.ajax({ url:"machine/cheese-generator", type: "DELETE" })
-            self.machines_model.delete(machine_name)
-            return redirect(url_for('MachinehubController:index'))
-        if request.method == 'POST' and form.validate():
+
+        if form.validate():
             values = {}
             for name, _type, _, _, _ in inputs:
                 value = getattr(form, name)
@@ -46,9 +59,7 @@ class MachineController(FlaskView):
                     values[name] = value.data
             current_folder = os.getcwd()
             os.chdir(os.path.join(MACHINES_FOLDER, machine_name))
-            file_url = os.path.join('machines',
-                                    machine_name,
-                                    MACHINESOUT,
+            file_url = os.path.join('machines', machine_name, MACHINESOUT,
                                     '%s_%s.stl' % (machine_name, dict_sha1(values)))
             file_path = os.path.join(UPLOAD_FOLDER, file_url)
             if not os.path.exists(file_path) or not values:
@@ -64,3 +75,9 @@ class MachineController(FlaskView):
                                show_stl=show_stl,
                                file_name=file_url,
                                machine_name=machine_name)
+
+    @route('/<machine_name>', methods=['DELETE'])
+    def delete_machine(self, machine_name):
+        if machine_name not in self.machines_model:
+            return render_template('404.html'), 404
+        self.machines_model.delete(machine_name)
