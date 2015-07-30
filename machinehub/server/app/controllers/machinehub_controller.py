@@ -58,7 +58,6 @@ class MachinehubController(FlaskView):
             for i in xrange(0, len(l), n):
                 yield l[i:i+n]
         splited_machines_info = list(chunks(machines_info, 4))
-
         return render_template('home.html',
                                splited_machines_info=splited_machines_info)
 

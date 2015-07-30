@@ -42,11 +42,7 @@
 		{% if description %}
 		<div class="container text-center">
 			<p>{{ description }}</p>
-
-			<form action="{{ url_for('MachineController:machine', machine_name=machine_name) }}"  method="POST">
-				<input type="hidden" name="_method" value="DELETE" />
-				<button type="submit" class="btn btn-danger">Remove the machine <span class="glyphicon glyphicon glyphicon-remove"></span></button>
-			</form>
+			<button onclick="$.ajax({ url:'{{ url_for('MachineController:delete_machine', machine_name=machine_name) }}', type: 'DELETE' });window.location = '/';" class="btn btn-danger">Remove the machine <span class="glyphicon glyphicon glyphicon-remove"></span></button>
 			
 		</div>
 		{% endif %}
@@ -82,7 +78,7 @@
 	  	{% endif %}
 
 		<div class="container text-center">
-			<form method=post action="{{ url_for('MachineController:machine', machine_name=machine_name) }}#viewer">
+			<form method=post action="{{ url_for('MachineController:post_machine', machine_name=machine_name) }}#viewer">
 				<dl>
 				  	{% for value in form %}
 				  	{{ render_field(value) }}
