@@ -5,13 +5,10 @@ from machinehub.server.app.controllers.auth_controller import requires_auth
 from machinehub.server.app.models.machine_model import MachineModel
 from werkzeug.exceptions import abort
 from machinehub.server.app.models.explorer_model import Pagination
-from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER
-from machinehub.server.app.controllers import resources
-from machinehub.errors import NotMachineHub
 from werkzeug.utils import redirect
 from flask.globals import request
-from machinehub.server.app.controllers.machine_controller import ALLOWED_EXTENSIONS
-import os
+from machinehub.server.app.models.resources_model import upload_files
+from machinehub.config import UPLOAD_FOLDER
 
 
 PER_PAGE = 20
@@ -24,7 +21,7 @@ def has_no_empty_params(rule):
 
 
 class MachinehubController(FlaskView):
-    decorators = [requires_auth]
+    decorators = []
     route_prefix = '/'
     route_base = '/'
 
@@ -61,7 +58,6 @@ class MachinehubController(FlaskView):
             for i in xrange(0, len(l), n):
                 yield l[i:i+n]
         splited_machines_info = list(chunks(machines_info, 4))
-
         return render_template('home.html',
                                splited_machines_info=splited_machines_info)
 
@@ -70,14 +66,16 @@ class MachinehubController(FlaskView):
         return send_from_directory(UPLOAD_FOLDER, filename)
 
     @route('/upload', methods=['GET', 'POST'])
+    @requires_auth
     def upload(self):
         if request.method == 'POST':
-            _file = request.files['file']
-            file_path = resources.save(_file, MACHINES_FOLDER, ALLOWED_EXTENSIONS)
-            if file_path:
-                try:
-                    name = self.machines_model.update(file_path)
-                    return redirect(url_for('MachineController:machine', machine_name=name))
-                except NotMachineHub as e:
-                    flash('WARNING! %s' % e.message, 'warning')
+            uploaded_files = request.files.getlist("file[]")
+            names = upload_files(uploaded_files, self.machines_model)
+            if names:
+                if len(names) == 1:
+                    return redirect(url_for('MachineController:machine', machine_name=names[0]))
+                else:
+                    return redirect(url_for('MachinehubController:index'))
+            elif names is None:
+                flash('WARNING! Machine not found.', 'warning')
         return render_template('machine/upload.html')
