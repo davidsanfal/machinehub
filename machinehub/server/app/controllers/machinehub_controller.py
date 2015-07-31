@@ -21,7 +21,7 @@ def has_no_empty_params(rule):
 
 
 class MachinehubController(FlaskView):
-    decorators = [requires_auth]
+    decorators = []
     route_prefix = '/'
     route_base = '/'
 
@@ -66,6 +66,7 @@ class MachinehubController(FlaskView):
         return send_from_directory(UPLOAD_FOLDER, filename)
 
     @route('/upload', methods=['GET', 'POST'])
+    @requires_auth
     def upload(self):
         if request.method == 'POST':
             uploaded_files = request.files.getlist("file[]")

@@ -17,7 +17,7 @@ ALLOWED_EXTENSIONS = ['py', 'zip']
 
 
 class MachineController(FlaskView):
-    decorators = [requires_auth]
+    decorators = []
     route_prefix = '/machine/'
     route_base = '/'
 
@@ -77,6 +77,7 @@ class MachineController(FlaskView):
                                machine_name=machine_name)
 
     @route('/<machine_name>', methods=['DELETE'])
+    @requires_auth
     def delete_machine(self, machine_name):
         if machine_name not in self.machines_model:
             return render_template('404.html'), 404
