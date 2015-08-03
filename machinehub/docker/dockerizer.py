@@ -1,9 +1,25 @@
 
 import os
 from subprocess import Popen, PIPE
+from machinehub.config import MACHINES_FOLDER, MACHINESOUT
+from jinja2 import Template
 
 
-path = os.path.dirname(os.path.realpath(__file__))
+Dockerfile_template = '''
+FROM machinehub
+
+ENV OUTPUT_FOLDER {{ output }}
+RUN apt-get -y update
+RUN apt-get -y upgrade
+
+{% for sysdep in system_deps %}
+RUN apt-get install -y sysdep
+{% endfor %}
+
+{% for pydep in python_deps %}
+RUN pip install pydep
+{% endfor %}
+'''
 
 
 def kill_and_remove(ctr_name):
@@ -14,18 +30,30 @@ def kill_and_remove(ctr_name):
             raise RuntimeError(p.stderr.read())
 
 
-def execute(machine, options):
-    p = Popen(['timeout', '-s', 'SIGKILL', '30',
-               'docker', 'run', '--rm',
-               ''
-               'ubuntu:14.04', 'python3', '-c', code],
-              stdout=PIPE)
-    out = p.stdout.read()
+def create_image(machine, system_deps, python_deps):
+    dockerfile_path = os.path.join(MACHINES_FOLDER, machine, 'Dockerfile')
+    dockerfile = Template(Dockerfile_template)
+    with open(dockerfile_path, 'w+') as f:
+        f.write(dockerfile.render(output=MACHINESOUT,
+                                  system_deps=system_deps,
+                                  python_deps=python_deps))
+    process = Popen(['docker', 'build', '-t', machine, '.'],
+                    cwd=os.path.join(MACHINES_FOLDER, machine),
+                    stdout=PIPE, stderr=PIPE)
+    stdout, stderr = process.communicate()
+    return stdout, stderr
 
-    if p.wait() == -9:  # Happens on timeout
-        # We have to kill the container since it still runs
-        # detached from Popen and we need to remove it after because
-        # --rm is not working on killed containers
-        kill_and_remove(ctr_name)
 
-    return out
+def dockerize(machine, machine_id):
+    machine_path = os.path.join(MACHINES_FOLDER, machine)
+    container_name = '%s%s' % (machine, machine_id)
+    process = Popen(['docker', 'run', '--rm',
+                     '-v', '%s:/worker/machine' % (machine_path),
+                     '--name', container_name,
+                     machine,
+                     'python', 'builder.py', machine_id, machine],
+                    stdout=PIPE, stderr=PIPE)
+    stdout, stderr = process.communicate()
+
+    print stdout, stderr
+    return stdout, stderr
