@@ -62,10 +62,14 @@ machine_path = os.path.join(builder_path, 'machine', '%s.py' % machine_name)
 fn = load_machine(machine_path)
 with open(os.path.join(builder_path, 'machine', 'input%s.json' % machine_id)) as f:
     values = json.load(f)
-    print 'values'
+    for val in values.keys():
+        print val, values[val], type(values[val])
+        if type(values[val]) == 'unicode':
+            values[val] = str(values[val])
     real_file_path = os.path.join(builder_path,
                                   'machine',
                                   os.environ['OUTPUT_FOLDER'],
                                   values['file_path'])
     values['file_path'] = real_file_path
+    os.chdir(os.path.join(builder_path, 'machine'))
     fn(**values)
