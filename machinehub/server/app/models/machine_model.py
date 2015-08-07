@@ -11,13 +11,11 @@ from machinehub.docker.dockerizer import dockerize, create_image
 class MachineModel(object):
     _instance = None
 
-    def __init__(self):
-        self._machines = {}
-        self.search()
-
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(MachineModel, cls).__new__(cls, *args, **kwargs)
+            cls._instance._machines = {}
+            cls._instance.search()
         return cls._instance
 
     def __contains__(self, machine):
