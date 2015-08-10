@@ -3,10 +3,37 @@
 
 # What is [machineHUB](docs/machinehub.pdf) ?
 
-
 ## Discover our [machines](https://github.com/bq/machines/)
 
 ## Installation
+
+### System dependencies
+
+**[Install FreeCAD](http://www.freecadweb.org/wiki/index.php?title=Install_on_Unix)**
+
+
+```bash
+# Install FreeCAD
+sudo add-apt-repository ppa:freecad-maintainers/freecad-stable
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install freecad freecad-doc
+```
+
+**[Install Docker](https://docs.docker.com/installation/ubuntulinux/)**
+
+```bash
+# Install Docker
+sudo apt-get install wget
+wget -qO- https://get.docker.com/ | sh
+```
+
+`Warning`
+
+```bash
+# Create a Docker group
+sudo usermod -aG docker ubuntu
+```
 
 ### Python requirements
 
@@ -15,16 +42,16 @@ cd machinehub
 sudo -H pip install -r requirements.txt
 ```
 
-### Engines
+## Execute
 
- * [FreeCAD](http://www.freecadweb.org/wiki/index.php?title=Installing)
+Build the machinehub docker image to use as base to the machine images.
 
 ```bash
-sudo apt-get install freecad
+cd machinehub/machinehub/docker/
+docker build -t .
 ```
 
-
-## Execute
+Launch the webapp.
 
 ```bash
 cd machinehub
@@ -45,11 +72,20 @@ port: 5000
 admin: admin #user: password
 ```
 
-### How to add pyooml to machinehub
+# Try Machinehub
 
-```bash
-git clone https://github.com/Obijuan/friki.git
-cd friki
-cp pyooml.py ~/.machinehub/machines/
-cp HMatrix.py ~/.machinehub/machines/
-```
+[localhost:5000](http://localhost:5000/)
+
+![](docs/img/home.png)
+
+[localhost:5000/upload](http://localhost:5000/upload)
+
+![](docs/img/upload.png)
+
+Select all the machine .zip files.
+
+![](docs/img/files.png)
+
+Clic in the blue upload button and machinehub will redirect your browser to the home page with the machines. loaded
+![](docs/img/uploaded.png)
+

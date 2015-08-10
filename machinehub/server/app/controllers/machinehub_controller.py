@@ -7,7 +7,7 @@ from werkzeug.exceptions import abort
 from machinehub.server.app.models.explorer_model import Pagination
 from werkzeug.utils import redirect
 from flask.globals import request
-from machinehub.server.app.models.resources_model import upload_files
+from machinehub.server.app.models.resources_model import upload_machines
 from machinehub.config import UPLOAD_FOLDER
 
 
@@ -70,7 +70,7 @@ class MachinehubController(FlaskView):
     def upload(self):
         if request.method == 'POST':
             uploaded_files = request.files.getlist("file[]")
-            names = upload_files(uploaded_files, self.machines_model)
+            names = upload_machines(uploaded_files, self.machines_model)
             if names:
                 if len(names) == 1:
                     return redirect(url_for('MachineController:machine', machine_name=names[0]))
