@@ -21,6 +21,7 @@
 		</script>
 
 {% endblock %}
+
 {% block content %}
 		{% with messages = get_flashed_messages(with_categories=true) %}
 		  	{% if messages %}
@@ -87,6 +88,10 @@
 				<p><input class="btn btn-lg btn-primary" type=submit value=create>
 			</form>
 		</div>
+		<!--div class="container text-center">
+			<i class="fa fa-cog fa-spin fa-5x"></i>
+			<h2>Building</h2>
+		</div-->
 		<div class="container text-center">
 			{% if show_stl %}
 			<a name="viewer" style="text-align:center;" href="{{ url_for('MachinehubController:download', filename=file_name) }}" class="btn btn-lg btn-primary"><span class="glyphicon glyphicon-download-alt"></span> Download the generated STL</a><br><br>

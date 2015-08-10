@@ -1,21 +1,21 @@
 import os
-from machinehub.config import MACHINES_FOLDER, MACHINESOUT
-from machinehub.common.machine_loader import load_machine
+from machinehub.config import MACHINES_FOLDER, MACHINESOUT, MACHINEFILE
 from machinehub.common.errors import NotFoundException, NotMachineHub
 import shutil
-import sys
+from machinehub.common.machinefile_loader import load_machinefile
+import json
+from machinehub.common.sha import date_sha1
+from machinehub.docker.dockerizer import dockerize, create_image
 
 
 class MachineModel(object):
     _instance = None
 
-    def __init__(self):
-        self._machines = {}
-        self.search()
-
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
             cls._instance = super(MachineModel, cls).__new__(cls, *args, **kwargs)
+            cls._instance._machines = {}
+            cls._instance.search()
         return cls._instance
 
     def __contains__(self, machine):
@@ -30,13 +30,12 @@ class MachineModel(object):
 
         for name in machine_folders:
             try:
-                sys.path.append(os.path.join(MACHINES_FOLDER, name))
-                machine = os.path.join(MACHINES_FOLDER, name, '%s.py' % name)
-                if os.path.exists(machine):
-                    fn, doc, inputs = load_machine(machine)
-                    self._machines[name] = {'fn': fn,
-                                            'doc': doc,
+                machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
+                if os.path.exists(machinefile):
+                    doc, inputs = load_machinefile(machinefile)
+                    self._machines[name] = {'doc': doc,
                                             'inputs': inputs}
+                    create_image(name, [], [])
             except NotMachineHub:
                 continue
 
@@ -51,10 +50,9 @@ class MachineModel(object):
     def count(self):
         return len(self._machines.keys())
 
-    def update(self, file_path):
+    def update(self, machinefile_path, name):
         try:
-            name = os.path.basename(file_path).replace('.py', '')
-            self._add(name, file_path)
+            self._add(name, machinefile_path)
         except NotMachineHub:
             raise NotMachineHub()
         return name
@@ -62,7 +60,7 @@ class MachineModel(object):
     def machine(self, name):
         try:
             machine = self._machines[name]
-            return machine['fn'], machine['doc'], machine['inputs']
+            return machine['doc'], machine['inputs']
         except:
             raise NotFoundException()
 
@@ -71,21 +69,20 @@ class MachineModel(object):
             shutil.rmtree(os.path.join(MACHINES_FOLDER, name))
         del self._machines[name]
 
-    def _add(self, name, machine_path):
-        objects_folder = os.path.join(MACHINES_FOLDER, name, MACHINESOUT)
-        fn, doc, inputs = load_machine(machine_path)
-        if name in self._machines.keys():
-            shutil.rmtree(objects_folder)
-        print name
-        self._machines[name] = {'fn': fn,
-                                'doc': doc,
+    def _add(self, name, machinefile_path):
+        out_folder = os.path.join(MACHINES_FOLDER, name, MACHINESOUT)
+        doc, inputs = load_machinefile(machinefile_path)
+        if os.path.exists(out_folder) and name in self._machines.keys():
+            shutil.rmtree(out_folder)
+        self._machines[name] = {'doc': doc,
                                 'inputs': inputs}
-        if not os.path.exists(objects_folder):
-            os.makedirs(objects_folder)
+        if not os.path.exists(out_folder):
+            os.makedirs(out_folder)
+        create_image(name, [], [])
 
     def get_machines_for_page(self, page, per_page, count):
         origin = per_page * (page - 1)
-        end = origin+per_page
+        end = origin + per_page
         machines = self._machines.keys()[origin:end] if count > origin + per_page \
             else self._machines.keys()[origin:]
         info = []
@@ -101,3 +98,10 @@ class MachineModel(object):
         for machine in self._machines.keys()[origin:]:
             info.append((machine, self._machines[machine]['doc']))
         return info
+
+    def work(self, values, name):
+        machine_id = date_sha1()
+        with open(os.path.join(MACHINES_FOLDER, name, 'input%s.json' % machine_id), 'w+') as f:
+            f.write(json.dumps(values))
+        dockerize(name, machine_id)
+        os.remove(os.path.join(MACHINES_FOLDER, name, 'input%s.json' % machine_id))

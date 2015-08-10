@@ -13,9 +13,6 @@ types = {'int': int,
          'float': float}
 
 
-ALLOWED_EXTENSIONS = ['py', 'zip']
-
-
 class MachineController(FlaskView):
     decorators = []
     route_prefix = '/machine/'
@@ -29,7 +26,7 @@ class MachineController(FlaskView):
         show_stl = False
         if machine_name not in self.machines_model:
             return render_template('404.html'), 404
-        _, doc, inputs = self.machines_model.machine(machine_name)
+        doc, inputs = self.machines_model.machine(machine_name)
         form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
         return render_template('machine/machine.html',
                                title=doc.title,
@@ -45,7 +42,7 @@ class MachineController(FlaskView):
         show_stl = False
         if machine_name not in self.machines_model:
             return render_template('404.html'), 404
-        fn, doc, inputs = self.machines_model.machine(machine_name)
+        doc, inputs = self.machines_model.machine(machine_name)
         form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
         file_url = ""
 
@@ -59,12 +56,12 @@ class MachineController(FlaskView):
                     values[name] = value.data
             current_folder = os.getcwd()
             os.chdir(os.path.join(MACHINES_FOLDER, machine_name))
-            file_url = os.path.join('machines', machine_name, MACHINESOUT,
-                                    '%s_%s.stl' % (machine_name, dict_sha1(values)))
+            file_name = '%s_%s.stl' % (machine_name, dict_sha1(values))
+            file_url = os.path.join('machines', machine_name, MACHINESOUT, file_name)
             file_path = os.path.join(UPLOAD_FOLDER, file_url)
             if not os.path.exists(file_path) or not values:
-                values['file_path'] = file_path
-                fn(**values)
+                values['file_path'] = file_name
+                self.machines_model.work(values, machine_name)
             os.chdir(current_folder)
             show_stl = True
         return render_template('machine/machine.html',

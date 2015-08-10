@@ -1,68 +1,20 @@
-from machinehub.common.errors import MachinehubException, NotMachineHub
-import uuid
-import imp
+from machinehub.common.errors import MachinehubException
 import os
-import inspect
 import re
-from machinehub.common.machinehub_logging import logger
 
 
-def check_machine(machine_file):
-    """ Check the integrity of a given machine
+def load_machinefile(machinefile_path):
+    """ loads a machinefile from the given file
     """
+
+    if not os.path.exists(machinefile_path):
+        raise MachinehubException("%s not found!" % machinefile_path)
     try:
-        a = machine_file.__dict__['machinebuilder']
-        if inspect.isfunction(a) and a.__doc__:
-            machine_info = MachineParser(a.__doc__)
-            return a, machine_info.doc, machine_info.inputs
-        else:
-            raise MachinehubException('machinebuilder must be a funcion with docstring')
-    except KeyError as e:
-        logger.info(e.message)
-        raise NotMachineHub()
-
-
-def load_machine(machine_path):
-    """ loads a machine from the given file
-    """
-    # Check if precompiled exist, delete it
-    if os.path.exists(machine_path + "c"):
-        os.unlink(machine_path + "c")
-
-    if not os.path.exists(machine_path):
-        raise MachinehubException("%s not found!" % machine_path)
-
-    # We have to generate a new name for each machine
-    module_id = uuid.uuid1()
-    try:
-        loaded = imp.load_source("machine%s" % module_id, machine_path)
-    except NotMachineHub:
-        import traceback
-        trace = traceback.format_exc().split('\n')
-        raise MachinehubException("Unable to load machine in %s\n%s" % (machine_path,
-                                                                        '\n'.join(trace[3:])))
-    try:
-        result = check_machine(loaded)
-        return result
+        with open(machinefile_path, 'r') as f:
+            machinefile = MachineParser(f.read())
+            return machinefile.doc, machinefile.inputs
     except MachinehubException as e:  # re-raise with file name
-        raise MachinehubException("%s: %s" % (machine_path, str(e)))
-
-
-def load_machine_from_source(machine):
-    """ loads a machine object from the given source
-    """
-    # We have to generate a new name for each machine
-    module_id = uuid.uuid1()
-    try:
-        loaded = imp.new_module("machine%s" % module_id)
-        exec machine in loaded.__dict__
-    except KeyError as e:
-        raise MachinehubException("Unable to load machine %s" % e.message)
-    try:
-        result = check_machine(loaded)
-        return result
-    except MachinehubException as e:  # re-raise with file name
-        raise MachinehubException("machine: %s" % str(e))
+        raise MachinehubException("%s: %s" % (machinefile_path, str(e)))
 
 
 class MachineParser(object):
@@ -94,7 +46,7 @@ class MachineParser(object):
                 current_lines.append(line)
         self.doc = DocMachine(doc_lines)
         self.inputs = InputsMachine(inputs_lines).inputs
-        self.outputs = OutputsMachine(outputs_lines)
+        self.outputs = OutputsMachine(outputs_lines).extensions
 
 
 class DocMachine(object):
@@ -169,5 +121,41 @@ class OutputsMachine(object):
                 current_lines = []
                 if group == 'extensions':
                     self.extensions = current_lines
+            else:
+                current_lines.append(line)
+
+
+class DepsMachine(object):
+    def __init__(self, lines):
+        self.sysdeps = []
+        self.pip = []
+        pattern = re.compile("^\-([a-z_]{2,50})\-")
+        for line in lines:
+            m = pattern.match(line)
+            if m:
+                group = m.group(1)
+                current_lines = []
+                if group == 'system':
+                    self.system_deps = current_lines
+                if group == 'pip':
+                    self.python_deps = current_lines
+            else:
+                current_lines.append(line)
+
+
+class EnginesMachine(object):
+    def __init__(self, lines):
+        self.engine = None
+        self.python_version = None
+        pattern = re.compile("^\-([a-z_]{2,50})\-")
+        for line in lines:
+            m = pattern.match(line)
+            if m:
+                group = m.group(1)
+                current_lines = []
+                if group == 'engine':
+                    self.engine = current_lines[0]
+                if group == 'python':
+                    self.python_version = current_lines[0]
             else:
                 current_lines.append(line)

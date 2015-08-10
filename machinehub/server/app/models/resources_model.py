@@ -2,11 +2,12 @@ import fnmatch
 from werkzeug.utils import secure_filename
 import os
 from machinehub.common.errors import MachinehubException, NotMachineHub
-from machinehub.config import MACHINES_FOLDER
-from machinehub.server.app.controllers.machine_controller import ALLOWED_EXTENSIONS
+from machinehub.config import MACHINES_FOLDER, MACHINEFILE
 import zipfile
 import shutil
-import sys
+
+
+ALLOWED_EXTENSIONS = ['zip']
 
 
 def allowed_file(filename, allowed_extension):
@@ -52,35 +53,33 @@ def save(resources, dest, extensions=None, pattern_extensions=None):
         raise MachinehubException('Define only one parameter "extensions" or "pattern_extensions"')
 
 
-def upload_files(uploaded_files, machines_model):
+def extract_zip(file_path):
+    try:
+        name, ext = os.path.splitext(os.path.basename(file_path))
+        with zipfile.ZipFile(file_path, "r") as z:
+            files_in_zip = z.namelist()
+            if not len(files_in_zip) == 1:
+                _name, ext = os.path.splitext(files_in_zip[0])
+                if ext == '' and _name == '%s/' % name and \
+                   all(s.startswith('%s/' % name) for s in files_in_zip):
+                    z.extractall(MACHINES_FOLDER)
+                elif '%s.py' % name in files_in_zip and MACHINEFILE in files_in_zip:
+                    z.extractall(os.path.join(MACHINES_FOLDER, name))
+            else:
+                os.remove(file_path)
+        return name
+    except NotMachineHub:
+        shutil.rmtree(os.path.join(MACHINES_FOLDER, os.path.basename(file_path)))
+
+
+def upload_machines(uploaded_files, machines_model):
+    names = []
     file_paths = save(uploaded_files, MACHINES_FOLDER, ALLOWED_EXTENSIONS)
     if file_paths:
-        names = []
         for file_path in file_paths:
-            try:
-                name, ext = os.path.splitext(os.path.basename(file_path))
-                if ext == '.zip':
-                    machine_path = os.path.join(MACHINES_FOLDER, name, '%s.py' % name)
-                    with zipfile.ZipFile(file_path, "r") as z:
-                        files_in_zip = z.namelist()
-                        print files_in_zip
-                        if not len(files_in_zip) == 1:
-                            _name, ext = os.path.splitext(files_in_zip[0])
-                            if ext == '' and _name == '%s/' % name and \
-                               all(s.startswith('%s/' % name) for s in files_in_zip):
-                                z.extractall(MACHINES_FOLDER)
-                            elif '%s.py' % name in files_in_zip:
-                                z.extractall(os.path.join(MACHINES_FOLDER, name))
-                        else:
-                            os.remove(file_path)
-                            machine_path = None
-                    if machine_path:
-                        sys.path.append(os.path.join(MACHINES_FOLDER, name))
-                        names.append(machines_model.update(machine_path))
-                else:
-                    names.append(machines_model.update(file_path))
-            except NotMachineHub:
-                shutil.rmtree(os.path.join(MACHINES_FOLDER, os.path.basename(file_path)))
-                pass
-        return names
-    return None
+            name = extract_zip(file_path)
+            machine_path = os.path.join(MACHINES_FOLDER, name, '%s.py' % name)
+            machinefile_path = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
+            if os.path.exists(machine_path) and os.path.exists(machinefile_path):
+                names.append(machines_model.update(machinefile_path, name))
+    return names
