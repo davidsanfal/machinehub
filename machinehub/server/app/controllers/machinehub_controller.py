@@ -8,7 +8,8 @@ from werkzeug.utils import redirect
 from flask.globals import request
 from machinehub.server.app.models.resources_model import upload_machines
 from machinehub.config import UPLOAD_FOLDER
-from flask_login import login_required, current_user
+from flask_login import login_required
+from machinehub.server.app.services.permission_service import user_can_edit
 
 
 PER_PAGE = 20
@@ -72,31 +73,15 @@ class MachinehubController(FlaskView):
             uploaded_files = request.files.getlist("file[]")
             names = upload_machines(uploaded_files, self.machines_model)
             if names:
-                machines_to_ignore = self._user_authorized(names)
-                for name in names:
-                    from machinehub.server.app.models.user_model import UserMachine
-                    from machinehub.server.app.webapp import db
-                    if name not in machines_to_ignore:
-                        machine = UserMachine(name)
-                        machine.user = current_user
-                        db.session.add(machine)
-                db.session.commit()
-                if len(names) == 1:
-                    return redirect(url_for('MachineController:machine', machine_name=names[0]))
+                if user_can_edit(names):
+                    from machinehub.server.app.models.user_model import add_machines_to_user
+                    add_machines_to_user(names)
+                    if len(names) == 1:
+                        return redirect(url_for('MachineController:machine', machine_name=names[0]))
+                    else:
+                        return redirect(url_for('MachinehubController:index'))
                 else:
-                    return redirect(url_for('MachinehubController:index'))
+                    flash('You can\'t upload one or more of this machines', 'warning')
             elif names is None:
-                flash('WARNING! Machine not found.', 'warning')
+                flash('Machines not found', 'warning')
         return render_template('machine/upload.html')
-
-    def _user_authorized(self, names):
-        if current_user.is_authenticated():
-            all_machines = [m.machinename for m in current_user.machines.all()]
-            owner_machines = []
-            for name in [name for name in names if name in all_machines]:
-                if name not in name in [m.machinename for m in current_user.machines.all()]:
-                    return False
-                else:
-                    owner_machines.append(name)
-            return owner_machines
-        return None

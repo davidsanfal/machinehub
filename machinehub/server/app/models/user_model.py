@@ -1,5 +1,11 @@
 from datetime import datetime
-from machinehub.server.app.webapp import db
+from machinehub.server.app.webapp import db, login_manager
+from flask_login import current_user
+
+
+@login_manager.user_loader
+def load_user(id):
+    return User.query.get(int(id))
 
 
 class User(db.Model):
@@ -41,3 +47,12 @@ class UserMachine(db.Model):
 
     def __init__(self, machinename):
         self.machinename = machinename
+
+
+def add_machines_to_user(names):
+    for name in names:
+        if name not in [m.machinename for m in current_user.machines.all()]:
+            machine = UserMachine(name)
+            machine.user = current_user
+            db.session.add(machine)
+    db.session.commit()

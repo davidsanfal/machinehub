@@ -64,10 +64,22 @@ class MachineModel(object):
         except:
             raise NotFoundException()
 
+    def machines(self, names):
+        try:
+            info = []
+            for name in names:
+                info.append((name, self._machines[name]['doc']))
+            return info
+        except:
+            raise NotFoundException()
+
     def delete(self, name):
         if os.path.exists(os.path.join(MACHINES_FOLDER, name)):
             shutil.rmtree(os.path.join(MACHINES_FOLDER, name))
-        del self._machines[name]
+        try:
+            del self._machines[name]
+        except:
+            pass
 
     def _add(self, name, machinefile_path):
         out_folder = os.path.join(MACHINES_FOLDER, name, MACHINESOUT)

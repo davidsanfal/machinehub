@@ -82,3 +82,8 @@ a:focus, a:hover {
 .navbar-default .navbar-nav>li>a:focus, .navbar-default .navbar-nav>li>a:hover {
   color: #F09000;
 }
+
+.button-item{
+  border: 1px solid #fff;
+  padding: 5px 0px 0px 0px;
+}

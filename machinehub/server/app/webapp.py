@@ -9,6 +9,7 @@ from flask_login import LoginManager
 from flask.templating import render_template
 from machinehub.server.app.controllers.auth_controller import AuthController
 from werkzeug.utils import redirect
+from machinehub.server.app.controllers.user_controller import UserController
 
 
 def url_for_other_page(page):
@@ -29,15 +30,10 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 
+UserController().register(app)
 MachinehubController().register(app)
 MachineController().register(app)
 AuthController().register(app)
-
-
-@login_manager.user_loader
-def load_user(id):
-    from machinehub.server.app.models.user_model import User
-    return User.query.get(int(id))
 
 
 @app.errorhandler(404)

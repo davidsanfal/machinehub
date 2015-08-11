@@ -6,7 +6,8 @@ from machinehub.config import UPLOAD_FOLDER, MACHINES_FOLDER, MACHINESOUT
 from machinehub.server.app.models.machine_model import MachineModel
 from machinehub.server.app.controllers.form_generator import metaform
 from machinehub.common.sha import dict_sha1
-from flask_login import login_required, current_user
+from flask_login import login_required
+from machinehub.server.app.services.permission_service import user_is_owner
 
 
 types = {'int': int,
@@ -24,7 +25,6 @@ class MachineController(FlaskView):
     @route('/<machine_name>', methods=['GET'])
     def machine(self, machine_name):
         show_stl = False
-        authoraize_user = self._user_is_owner(machine_name)
         if machine_name not in self.machines_model:
             return render_template('404.html'), 404
         doc, inputs = self.machines_model.machine(machine_name)
@@ -37,12 +37,11 @@ class MachineController(FlaskView):
                                show_stl=show_stl,
                                file_name="",
                                machine_name=machine_name,
-                               authoraize_user=authoraize_user)
+                               authoraize_user=user_is_owner(machine_name))
 
     @route('/<machine_name>', methods=['POST'])
     def post_machine(self, machine_name):
         show_stl = False
-        authoraize_user = self._user_is_owner(machine_name)
         if machine_name not in self.machines_model:
             return render_template('404.html'), 404
         doc, inputs = self.machines_model.machine(machine_name)
@@ -75,24 +74,17 @@ class MachineController(FlaskView):
                                show_stl=show_stl,
                                file_name=file_url,
                                machine_name=machine_name,
-                               authoraize_user=authoraize_user)
+                               authoraize_user=user_is_owner(machine_name))
 
     @route('/<machine_name>', methods=['DELETE'])
     @login_required
     def delete_machine(self, machine_name):
         if machine_name not in self.machines_model:
             return render_template('404.html'), 404
-        authoraize_user = self._user_is_owner(machine_name)
-        if authoraize_user:
+        if user_is_owner(machine_name):
             from machinehub.server.app.models.user_model import UserMachine
             from machinehub.server.app.webapp import db
-            machine = UserMachine(machine_name)
-            del machine
+            machine = UserMachine.query.filter_by(machinename=machine_name).first()
+            db.session.delete(machine)
             db.session.commit()
             self.machines_model.delete(machine_name)
-
-    def _user_is_owner(self, machine_name):
-        authoraize_user = False
-        if current_user.is_authenticated():
-            authoraize_user = machine_name in [m.machinename for m in current_user.machines.all()]
-        return authoraize_user
