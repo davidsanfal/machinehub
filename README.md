@@ -48,7 +48,7 @@ Build the machinehub docker image to use as base to the machine images.
 
 ```bash
 cd machinehub/machinehub/docker/
-docker build -t .
+docker build -t machinehub .
 ```
 
 Launch the webapp.
