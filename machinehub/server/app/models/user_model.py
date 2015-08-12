@@ -1,6 +1,6 @@
 from datetime import datetime
-from machinehub.server.app.webapp import db, login_manager
 from flask_login import current_user
+from machinehub.server.app import db, login_manager
 
 
 @login_manager.user_loader

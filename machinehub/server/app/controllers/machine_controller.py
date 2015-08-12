@@ -8,6 +8,8 @@ from machinehub.server.app.controllers.form_generator import metaform
 from machinehub.common.sha import dict_sha1
 from flask_login import login_required
 from machinehub.server.app.services.permission_service import user_is_owner
+from machinehub.server.app import db
+from machinehub.server.app.models.user_model import UserMachine
 
 
 types = {'int': int,
@@ -82,8 +84,6 @@ class MachineController(FlaskView):
         if machine_name not in self.machines_model:
             return render_template('404.html'), 404
         if user_is_owner(machine_name):
-            from machinehub.server.app.models.user_model import UserMachine
-            from machinehub.server.app.webapp import db
             machine = UserMachine.query.filter_by(machinename=machine_name).first()
             db.session.delete(machine)
             db.session.commit()

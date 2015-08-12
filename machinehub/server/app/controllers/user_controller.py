@@ -1,9 +1,9 @@
 from flask_classy import route, FlaskView
 from flask.templating import render_template
 from flask_login import current_user
-from flask_sqlalchemy import Pagination
 from flask.helpers import url_for
 from machinehub.server.app.models.machine_model import MachineModel
+from machinehub.server.app.models.user_model import UserMachine, User
 
 
 class UserController(FlaskView):
@@ -20,8 +20,6 @@ class UserController(FlaskView):
             authoraize_user = current_user.username == username
         except AttributeError:
             authoraize_user = False
-        from machinehub.server.app.models.user_model import User
-        from machinehub.server.app.models.user_model import UserMachine
         links = []
         user_id = User.query.filter_by(username=username).first().id
         machines = [m.machinename for m in UserMachine.query.filter_by(user_id=user_id).all()]
