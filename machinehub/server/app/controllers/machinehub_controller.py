@@ -1,15 +1,10 @@
-from flask.helpers import url_for, send_from_directory, flash
+from flask.helpers import url_for, send_from_directory
 from flask_classy import route, FlaskView
 from flask.templating import render_template
-from machinehub.server.app.models.machine_model import MachineModel
+from machinehub.server.app.models.machine_model import MachineManager
 from werkzeug.exceptions import abort
 from machinehub.server.app.models.explorer_model import Pagination
-from werkzeug.utils import redirect
-from flask.globals import request
-from machinehub.server.app.models.resources_model import upload_machines
 from machinehub.config import UPLOAD_FOLDER
-from flask_login import login_required
-from machinehub.server.app.services.permission_service import user_can_edit
 
 
 PER_PAGE = 20
@@ -27,7 +22,7 @@ class MachinehubController(FlaskView):
     route_base = '/'
 
     def __init__(self):
-        self.machines_model = MachineModel()
+        self.machines_model = MachineManager()
 
     @route('/machines/<int:page>')
     def machines(self, page):
@@ -65,23 +60,3 @@ class MachinehubController(FlaskView):
     @route('/download/<path:filename>')
     def download(self, filename):
         return send_from_directory(UPLOAD_FOLDER, filename)
-
-    @route('/upload', methods=['GET', 'POST'])
-    @login_required
-    def upload(self):
-        if request.method == 'POST':
-            uploaded_files = request.files.getlist("file[]")
-            names = upload_machines(uploaded_files, self.machines_model)
-            if names:
-                if user_can_edit(names):
-                    from machinehub.server.app.models.user_model import add_machines_to_user
-                    add_machines_to_user(names)
-                    if len(names) == 1:
-                        return redirect(url_for('MachineController:machine', machine_name=names[0]))
-                    else:
-                        return redirect(url_for('MachinehubController:index'))
-                else:
-                    flash('You can\'t upload one or more of this machines', 'warning')
-            elif names is None:
-                flash('Machines not found', 'warning')
-        return render_template('machine/upload.html')

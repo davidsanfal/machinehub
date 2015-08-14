@@ -6,14 +6,16 @@ from machinehub.common.machinefile_loader import load_machinefile
 import json
 from machinehub.common.sha import date_sha1
 from machinehub.docker.dockerizer import dockerize, create_image
+from machinehub.server.app import db
+from flask_login import current_user
 
 
-class MachineModel(object):
+class MachineManager(object):
     _instance = None
 
     def __new__(cls, *args, **kwargs):
         if not cls._instance:
-            cls._instance = super(MachineModel, cls).__new__(cls, *args, **kwargs)
+            cls._instance = super(MachineManager, cls).__new__(cls, *args, **kwargs)
             cls._instance._machines = {}
             cls._instance.search()
         return cls._instance
@@ -92,10 +94,10 @@ class MachineModel(object):
             os.makedirs(out_folder)
         create_image(name, [], [])
 
-    def get_machines_for_page(self, page, per_page, count):
+    def get_machines_for_page(self, page, per_page):
         origin = per_page * (page - 1)
         end = origin + per_page
-        machines = self._machines.keys()[origin:end] if count > origin + per_page \
+        machines = self._machines.keys()[origin:end] if self.count > origin + per_page \
             else self._machines.keys()[origin:]
         info = []
         for machine in machines:
@@ -117,3 +119,21 @@ class MachineModel(object):
             f.write(json.dumps(values))
         dockerize(name, machine_id)
         os.remove(os.path.join(MACHINES_FOLDER, name, 'input%s.json' % machine_id))
+
+
+class MachineModel(db.Model):
+    __tablename__ = 'machines'
+    id = db.Column('machines_id', db.Integer, primary_key=True)
+    machinename = db.Column('machinename', db.String(100), unique=True, index=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+
+    def __init__(self, machinename):
+        self.machinename = machinename
+
+
+def add_machine_to_user(name):
+    if name not in [m.machinename for m in current_user.machines.all()]:
+        machine = MachineModel(name)
+        machine.user = current_user
+        db.session.add(machine)
+    db.session.commit()

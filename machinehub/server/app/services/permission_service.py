@@ -1,4 +1,5 @@
 from flask_login import current_user
+from machinehub.server.app.models.machine_model import MachineModel
 
 
 def user_is_owner(machine_name):
@@ -8,14 +9,12 @@ def user_is_owner(machine_name):
     return authoraize_user
 
 
-def user_can_edit(names):
-    from machinehub.server.app.models.user_model import UserMachine
+def user_can_edit(name):
     if current_user.is_authenticated():
-        all_machines = [m.machinename for m in UserMachine.query.all()]
-        user_machines = [m.machinename for m in current_user.machines.all()]
-        for name in names:
-            if name in all_machines and name not in user_machines:
-                return False
-        return True
+        all_machines = [m.machinename for m in MachineModel.query.all()]
+        if name in all_machines and name not in current_user.machine_names:
+            return False
+        else:
+            return True
     else:
         return False
