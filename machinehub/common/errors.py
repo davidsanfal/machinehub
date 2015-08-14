@@ -8,3 +8,7 @@ class NotFoundException(Exception):
 
 class NotMachineHub(Exception):
     pass
+
+
+class ForbiddenException(Exception):
+    pass

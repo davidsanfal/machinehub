@@ -1,0 +1,31 @@
+{% from "_formhelpers.html" import render_field %}
+{% extends "base/layout.html" %}
+{% block content %}
+		<div class="container text-center">
+			<h1>{{ user }}</h1>
+        	{% if authoraize_user %}
+			{% endif %}
+		</div>
+
+	<div class="container text-center">
+		<ul class="list-group row">
+			{% for url, endpoint, title, doc in links %}
+				{% if authoraize_user %}
+				<a href="{{ url }}"  class="list-group-item col-xs-11">
+				{% else %}
+				<a href="{{ url }}"  class="list-group-item col-xs-12">
+				{% endif %}
+					<h4 class="list-group-item-heading">{{ endpoint }}</h4>
+					<p class="list-group-item-text">{{ doc }}</p>
+				</a>
+				{% if authoraize_user %}
+				<div class="list-group-item button-item col-xs-1">
+					<button onclick="$.ajax({ url:'{{ url_for('MachineController:delete_machine', machine_name=endpoint) }}', type: 'DELETE' });window.location = '/{{ user }}';" class="btn-lg btn-danger"><span class="glyphicon glyphicon glyphicon-remove"></span></button>
+				</div>
+				{% endif %}
+			{% endfor %}
+		</ul>
+	</div>
+	
+
+{% endblock %}

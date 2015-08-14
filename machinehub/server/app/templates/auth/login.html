@@ -1,0 +1,28 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<div class="container text-center">
+  <form action="" method=post class="form-horizontal">
+    <h1>Log In</h1>
+    <br>
+    <div class="control-group">
+        <div class="controls">
+          <input type="text" id="username" name="username" class="input-xlarge"
+            placeholder="Enter Username" required>
+        </div>
+    </div>
+ 	<br>
+    <div class="control-group">
+        <div class="controls">
+          <input type="password" id="password" name="password" class="input-xlarge"
+            placeholder="Enter Password" required>
+        </div>
+    </div>
+ 	<br>
+    <div class="control-group">
+        <div class="controls">
+          <button type="submit" class="btn btn-success">Log In</button>
+        </div>
+    </div>
+  </form>
+</div>
+{% endblock %}
