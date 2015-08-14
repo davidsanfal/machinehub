@@ -22,13 +22,13 @@ class MachinehubController(FlaskView):
     route_base = '/'
 
     def __init__(self):
-        self.machines_model = MachineManager()
+        self.machines_manager = MachineManager()
 
     @route('/machines/<int:page>')
     def machines(self, page):
         links = []
-        count = self.machines_model.count
-        machines = self.machines_model.get_machines_for_page(page, PER_PAGE, count)
+        count = self.machines_manager.count
+        machines = self.machines_manager.get_machines_for_page(page, PER_PAGE, count)
         for name, doc in machines:
             url = url_for('MachineController:machine', machine_name=name)
             links.append((url, name, doc.title or "", doc.description or ""))
@@ -43,7 +43,7 @@ class MachinehubController(FlaskView):
     @route('/')
     def index(self):
         machines_info = []
-        machines = self.machines_model.get_last_machines()
+        machines = self.machines_manager.get_last_machines()
         for name, doc in machines:
             url = url_for('MachineController:machine', machine_name=name)
             image = doc.images[0] if doc.images else None
