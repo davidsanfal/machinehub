@@ -1,13 +1,9 @@
-from flask.helpers import url_for, send_from_directory, flash
+from flask.helpers import url_for, send_from_directory
 from flask_classy import route, FlaskView
 from flask.templating import render_template
-from machinehub.server.app.controllers.auth_controller import requires_auth
-from machinehub.server.app.models.machine_model import MachineModel
+from machinehub.server.app.models.machine_model import MachineManager
 from werkzeug.exceptions import abort
 from machinehub.server.app.models.explorer_model import Pagination
-from werkzeug.utils import redirect
-from flask.globals import request
-from machinehub.server.app.models.resources_model import upload_machines
 from machinehub.config import UPLOAD_FOLDER
 
 
@@ -26,13 +22,13 @@ class MachinehubController(FlaskView):
     route_base = '/'
 
     def __init__(self):
-        self.machines_model = MachineModel()
+        self.machines_manager = MachineManager()
 
     @route('/machines/<int:page>')
     def machines(self, page):
         links = []
-        count = self.machines_model.count
-        machines = self.machines_model.get_machines_for_page(page, PER_PAGE, count)
+        count = self.machines_manager.count
+        machines = self.machines_manager.get_machines_for_page(page, PER_PAGE, count)
         for name, doc in machines:
             url = url_for('MachineController:machine', machine_name=name)
             links.append((url, name, doc.title or "", doc.description or ""))
@@ -47,7 +43,7 @@ class MachinehubController(FlaskView):
     @route('/')
     def index(self):
         machines_info = []
-        machines = self.machines_model.get_last_machines()
+        machines = self.machines_manager.get_last_machines()
         for name, doc in machines:
             url = url_for('MachineController:machine', machine_name=name)
             image = doc.images[0] if doc.images else None
@@ -64,18 +60,3 @@ class MachinehubController(FlaskView):
     @route('/download/<path:filename>')
     def download(self, filename):
         return send_from_directory(UPLOAD_FOLDER, filename)
-
-    @route('/upload', methods=['GET', 'POST'])
-    @requires_auth
-    def upload(self):
-        if request.method == 'POST':
-            uploaded_files = request.files.getlist("file[]")
-            names = upload_machines(uploaded_files, self.machines_model)
-            if names:
-                if len(names) == 1:
-                    return redirect(url_for('MachineController:machine', machine_name=names[0]))
-                else:
-                    return redirect(url_for('MachinehubController:index'))
-            elif names is None:
-                flash('WARNING! Machine not found.', 'warning')
-        return render_template('machine/upload.html')

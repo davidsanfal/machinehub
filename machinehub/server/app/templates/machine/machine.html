@@ -23,18 +23,6 @@
 {% endblock %}
 
 {% block content %}
-		{% with messages = get_flashed_messages(with_categories=true) %}
-		  	{% if messages %}
-		  		<div class="container text-center">
-			    {% for category, message in messages %}
-			    	<div class="alert alert-{{ category }}">
-						<button type="button" class="close" data-dismiss="alert">&times;</button>
-						{{ message }}
-					</div>
-				{% endfor %}
-				</div>
-			{% endif %}
-		{% endwith %}
 		{% if title %}
 		<div class="container text-center">
 			<h1>{{ title }}</h1>
@@ -43,8 +31,10 @@
 		{% if description %}
 		<div class="container text-center">
 			<p>{{ description }}</p>
+
+            {% if authoraize_user %}
 			<button onclick="$.ajax({ url:'{{ url_for('MachineController:delete_machine', machine_name=machine_name) }}', type: 'DELETE' });window.location = '/';" class="btn btn-danger">Remove the machine <span class="glyphicon glyphicon glyphicon-remove"></span></button>
-			
+			{% endif %}
 		</div>
 		{% endif %}
 

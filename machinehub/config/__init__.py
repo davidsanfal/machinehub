@@ -34,7 +34,3 @@ with open(machinehubconfig_path, "r") as f:
     config = f.read()
 
 machinehub_conf = ConfigParser(config, ['server', 'users'])
-
-# #### LOGGER #####
-MACHINEHUB_LOGGING_LEVEL = get_env('MACHINEHUB_LOGGING_LEVEL', logging.CRITICAL)
-MACHINEHUB_LOGGING_FILE = get_env('MACHINEHUB_LOGGING_FILE', None)  # None is stdout
