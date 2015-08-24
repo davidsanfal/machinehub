@@ -1,0 +1,15 @@
+{% extends "base/layout.html" %}
+{% block content %}
+<div class="container text-center">
+	<div class="jumbotron white">
+		<h1>Forbidden</h1>
+		<h2>Access is denied</h2>
+		<br>
+		<a href="{{ url_for('MachinehubController:index') }}">
+			<img src= {{ url_for('static', filename = 'img/machinehub_logo.png') }} class="img-responsive-center machinehub">
+
+		</a>
+		
+	</div>
+</div>
+{% endblock %}

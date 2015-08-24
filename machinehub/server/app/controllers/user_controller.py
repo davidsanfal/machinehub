@@ -5,6 +5,8 @@ from flask.helpers import url_for
 from machinehub.server.app.models.machine_model import MachineManager,\
     MachineModel
 from machinehub.server.app.models.user_model import UserModel
+from machinehub.server.app import db
+from flask.globals import request
 
 
 class UserController(FlaskView):
@@ -21,7 +23,8 @@ class UserController(FlaskView):
         except AttributeError:
             authoraize_user = False
         links = []
-        user_id = UserModel.query.filter_by(username=username).first().id
+        user = UserModel.query.filter_by(username=username).first()
+        user_id = user.id
         machines = [m.machinename for m in MachineModel.query.filter_by(user_id=user_id).all()]
         for name, doc in MachineManager().machines(machines):
             url = url_for('MachineController:machine', machine_name=name)
@@ -29,5 +32,36 @@ class UserController(FlaskView):
 
         return render_template('user/profile.html',
                                user=username,
+                               name=user.name,
+                               description=user.description,
+                               show_email=user.show_email,
+                               email=user.email,
                                authoraize_user=authoraize_user,
                                links=links)
+
+    @route('/<username>/settings', methods=['GET'])
+    def get_settings(self, username):
+        if current_user.is_authenticated() and current_user.username == username:
+            user = UserModel.query.filter_by(username=username).first()
+            return render_template('user/settings.html',
+                                   user=username,
+                                   name=user.name,
+                                   description=user.description,
+                                   show_email=user.show_email)
+        return render_template('403.html'), 403
+
+    @route('/<username>/settings', methods=['POST'])
+    def update_settings(self, username):
+        if current_user.is_authenticated() and current_user.username == username:
+            user = UserModel.query.filter_by(username=username).first()
+            user.name = request.form['name']
+            user.description = request.form['description']
+            user.show_email = True if request.form.get('show_email') else False
+#             db.session.update(user)
+            db.session.commit()
+            return render_template('user/settings.html',
+                                   user=username,
+                                   name=user.name,
+                                   description=user.description,
+                                   show_email=user.show_email)
+        return render_template('403.html'), 403

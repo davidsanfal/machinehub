@@ -1,8 +1,31 @@
 {% from "_formhelpers.html" import render_field %}
 {% extends "base/layout.html" %}
+{% block head %}
+		<script type="text/javascript" src="{{ url_for('static', filename='js/MD5.js') }}"></script>
+	    <script>
+		 window.onload = function()
+		 {
+		 	var base = "http://www.gravatar.com/avatar/";
+		 	var email = "{{ email }}";
+		 	var hash = MD5(email);
+		 	var fullUrl = base+hash+"?size="+150+"&r=x&d=identicon";
+		 	document.getElementById("avatar").src=fullUrl;
+		 }
+		</script>
+
+{% endblock %}
 {% block content %}
 		<div class="container text-center">
 			<h1>{{ user }}</h1>
+			<br>
+			<img id="avatar" class="img-responsive-center">
+			<br>
+			<br>
+			<strong>User name:</strong> {{ name }}
+		 	<br><br>
+		 	{% if show_email %}<strong>Email:</strong> {{ email }}<br><br>{% endif %}
+		    <strong>Description:</strong> {{ description }}
+		 	<br>
         	{% if authoraize_user %}
 			{% endif %}
 		</div>
