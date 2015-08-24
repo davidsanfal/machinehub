@@ -26,17 +26,25 @@
 				</div>
 		    	<div class="col-sm-8">
 		    		<div class="row"><h1>{{ user }}</h1></div>
-		    		<div class="row"><strong>Name:</strong> {{ name }}</div>
+		    		<div class="row">
+		    			<div class="col-sm-2"><strong>Name:</strong></div>
+		    			<div class="col-sm-10">{{ name }}</div>
+		    		</div>
 		    		<div class="row"><br></div>
-		    		<div class="row"><strong>Description:</strong> {{ description }}</div>
+		    		<div class="row">
+		    			<div class="col-sm-2"><strong>Description:</strong></div>
+		    			<div class="col-sm-10">{{ description }}</div>
+		    		</div>
 		    		{% if show_email %}
 		    		<div class="row"><br></div>
-		    		<div class="row"><strong>Email:</strong> {{ email }}</div>
+		    		<div class="row">
+		    			<div class="col-sm-2"><strong>Email:</strong></div>
+		    			<div class="col-sm-10">{{ email }}</div>
+		    		</div>
 		    		{% endif %}
 		    	</div>
 		  	</div>
 		</div>
-
 	<div class="container text-center">
 		<ul class="list-group row">
 			{% for url, endpoint, title, doc in links %}
