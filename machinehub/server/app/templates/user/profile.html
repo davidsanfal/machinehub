@@ -15,19 +15,26 @@
 
 {% endblock %}
 {% block content %}
-		<div class="container text-center">
-			<h1>{{ user }}</h1>
-			<br>
-			<img id="avatar" class="img-responsive-center">
-			<br>
-			<br>
-			<strong>User name:</strong> {{ name }}
-		 	<br><br>
-		 	{% if show_email %}<strong>Email:</strong> {{ email }}<br><br>{% endif %}
-		    <strong>Description:</strong> {{ description }}
-		 	<br>
-        	{% if authoraize_user %}
-			{% endif %}
+		<div class="container">
+		 	<div class="row">
+		    	<div class="col-sm-2">
+		    		<div class="row text-center"><img id="avatar" class="img-responsive-center"></div>
+		    		{% if authoraize_user %}
+		    		<div class="row"><br></div>
+		    		<div class="row text-center"><a href='{{ url_for('UserController:settings', username=user) }}' class="btn btn-primary"><span class="glyphicon glyphicon-cog"></span> Edit profile</a></div>
+		    		{% endif %}
+				</div>
+		    	<div class="col-sm-8">
+		    		<div class="row"><h1>{{ user }}</h1></div>
+		    		<div class="row"><strong>Name:</strong> {{ name }}</div>
+		    		<div class="row"><br></div>
+		    		<div class="row"><strong>Description:</strong> {{ description }}</div>
+		    		{% if show_email %}
+		    		<div class="row"><br></div>
+		    		<div class="row"><strong>Email:</strong> {{ email }}</div>
+		    		{% endif %}
+		    	</div>
+		  	</div>
 		</div>
 
 	<div class="container text-center">

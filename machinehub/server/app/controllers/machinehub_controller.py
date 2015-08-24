@@ -28,7 +28,7 @@ class MachinehubController(FlaskView):
     def machines(self, page):
         links = []
         count = self.machines_manager.count
-        machines = self.machines_manager.get_machines_for_page(page, PER_PAGE, count)
+        machines = self.machines_manager.get_machines_for_page(page, PER_PAGE)
         for name, doc in machines:
             url = url_for('MachineController:machine', machine_name=name)
             links.append((url, name, doc.title or "", doc.description or ""))
