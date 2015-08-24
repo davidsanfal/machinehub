@@ -7,6 +7,7 @@ from machinehub.server.app.models.machine_model import MachineManager,\
 from machinehub.server.app.models.user_model import UserModel
 from machinehub.server.app import db
 from flask.globals import request
+from werkzeug.utils import redirect
 
 
 class UserController(FlaskView):
@@ -40,7 +41,7 @@ class UserController(FlaskView):
                                links=links)
 
     @route('/<username>/settings', methods=['GET'])
-    def get_settings(self, username):
+    def settings(self, username):
         if current_user.is_authenticated() and current_user.username == username:
             user = UserModel.query.filter_by(username=username).first()
             return render_template('user/settings.html',
@@ -59,9 +60,5 @@ class UserController(FlaskView):
             user.show_email = True if request.form.get('show_email') else False
 #             db.session.update(user)
             db.session.commit()
-            return render_template('user/settings.html',
-                                   user=username,
-                                   name=user.name,
-                                   description=user.description,
-                                   show_email=user.show_email)
+            return redirect(url_for('UserController:user', username=username))
         return render_template('403.html'), 403

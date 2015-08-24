@@ -10,7 +10,7 @@ def main():
     db.create_all()
     app.run(host=machinehub_conf.server.host,
             port=int(machinehub_conf.server.port),
-            debug=True)
+            debug=False)
 
 
 if __name__ == '__main__':
