@@ -1,0 +1,24 @@
+{% extends "base/layout.html" %}
+{% block content %}
+
+<div class="container text-center">
+		<h1>{{ user }} settings</h1>
+
+	  <form action="" method=post class="form-horizontal" id="settings">
+	    <br>
+	    <h3>User name </h3>
+	    <input type="text" id="name" name="name" class="input-xlarge" value="{{ name }}" required> 
+	 	<br>
+	    <h3>Show email 
+	    <input type="checkbox" id="show_email" name="show_email" class="input-xlarge" {% if show_email %} checked {% endif %}>
+	    </h3>
+	 	<br>
+	    <h3>Description</h3>
+	    <textarea rows="4" cols="50" name="description" form="settings">{{ description }}</textarea>
+	 	<br>
+	 	<br>
+	 	<br>
+		<button type="submit" class="btn btn-success">Update</button>
+	  </form>
+</div>
+{% endblock %}

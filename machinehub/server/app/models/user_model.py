@@ -1,5 +1,4 @@
 from datetime import datetime
-from flask_login import current_user
 from machinehub.server.app import db, login_manager
 
 
@@ -8,7 +7,10 @@ class UserModel(db.Model):
     id = db.Column('user_id', db.Integer, primary_key=True)
     username = db.Column('username', db.String(20), unique=True, index=True)
     password = db.Column('password', db.String(10))
-    email = db.Column('email', db.String(50),unique=True, index=True)
+    email = db.Column('email', db.String(50), unique=True, index=True)
+    show_email = db.Column('show_email', db.Boolean)
+    description = db.Column('description', db.String)
+    name = db.Column('name', db.String(50))
     registered_on = db.Column('registered_on', db.DateTime)
     machines = db.relationship('MachineModel', backref='user', lazy='dynamic')
 
@@ -17,6 +19,9 @@ class UserModel(db.Model):
         self.password = password
         self.email = email
         self.registered_on = datetime.utcnow()
+        self.description = ""
+        self.name = ""
+        self.show_email = False
 
     @property
     def machine_names(self):
