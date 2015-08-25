@@ -27,8 +27,9 @@ class MachineManager(object):
             return False
 
     def search(self):
-        machine_folders = [p for p in os.listdir(MACHINES_FOLDER)
-                           if os.path.isdir(os.path.join(MACHINES_FOLDER, p))]
+        all_machines = [m.machinename for m in MachineModel.query.all()]
+        machine_folders = [m for m in all_machines
+                           if os.path.isdir(os.path.join(MACHINES_FOLDER, m))]
 
         for name in machine_folders:
             try:
