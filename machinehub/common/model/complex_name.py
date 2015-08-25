@@ -4,9 +4,9 @@ from machinehub.common.errors import InvalidNameException
 
 class ComplexName(str):
     """Complex biicode name
-    Stores a name for every group_name.name (block name) and branch names
+    Stores a name for every group_name.name (machine name)
     Valid names MUST begin with a letter or number, and contain
-    a min of 3 chars and max of 20 characters, including:
+    a min of 3 chars and max of 200 characters, including:
     letters, numbers, underscore, dot and dash
     """
     max_chars = 200
