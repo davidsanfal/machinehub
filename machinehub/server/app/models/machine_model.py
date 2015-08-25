@@ -27,20 +27,23 @@ class MachineManager(object):
             return False
 
     def search(self):
-        all_machines = [m.machinename for m in MachineModel.query.all()]
-        machine_folders = [m for m in all_machines
-                           if os.path.isdir(os.path.join(MACHINES_FOLDER, m))]
+        try:
+            all_machines = [m.machinename for m in MachineModel.query.all()]
+            machine_folders = [m for m in all_machines
+                               if os.path.isdir(os.path.join(MACHINES_FOLDER, m))]
 
-        for name in machine_folders:
-            try:
-                machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
-                if os.path.exists(machinefile):
-                    doc, inputs = load_machinefile(machinefile)
-                    self._machines[name] = {'doc': doc,
-                                            'inputs': inputs}
-                    create_image(name, [], [])
-            except NotMachineHub:
-                continue
+            for name in machine_folders:
+                try:
+                    machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
+                    if os.path.exists(machinefile):
+                        doc, inputs = load_machinefile(machinefile)
+                        self._machines[name] = {'doc': doc,
+                                                'inputs': inputs}
+                        create_image(name, [], [])
+                except NotMachineHub:
+                    continue
+        except:
+            pass
 
     @property
     def all_machines(self):
