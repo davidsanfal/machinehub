@@ -3,7 +3,7 @@ from machinehub.common.errors import InvalidNameException
 
 
 class ComplexName(str):
-    """Complex biicode name
+    """Complex name
     Stores a name for every group_name.name (machine name)
     Valid names MUST begin with a letter or number, and contain
     a min of 3 chars and max of 200 characters, including:
