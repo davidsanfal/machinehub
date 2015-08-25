@@ -34,7 +34,9 @@
 					<ul class="nav navbar-nav  navbar-right">
 						<li><a href="{{ url_for('MachinehubController:machines', page=1) }}"><span class="glyphicon glyphicon glyphicon-th-list" aria-hidden="true"></span> Machines</a></li>
 						{% if current_user.is_authenticated() %}
-							<li><a href="{{ url_for('MachineController:new') }}"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Upload</a></li>
+							{% if current_user.confirmed %}
+								<li><a href="{{ url_for('MachineController:new') }}"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span> Upload</a></li>
+							{% endif %}
 							<li class="active"><a href="{{ url_for('UserController:user', username=current_user.username) }}">{{ current_user.username }}</a></li>
 							<li class="active"><a href="{{ url_for('AuthController:logout') }}"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span></a></li>
 						{% else %}
