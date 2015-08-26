@@ -95,3 +95,7 @@ textarea {
 
 	width: 100%;
 }
+
+.footer-images img{
+ 	float: right;
+}

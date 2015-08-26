@@ -33,7 +33,7 @@
 			<p>{{ description }}</p>
 
             {% if authoraize_user %}
-			<button onclick="$.ajax({ url:'{{ url_for('MachineController:delete_machine', machine_name=machine_name) }}', type: 'DELETE' });window.location = '/';" class="btn btn-danger">Remove the machine <span class="glyphicon glyphicon glyphicon-remove"></span></button>
+			<button onclick="$.ajax({ url:'{{ url_for('MachineController:delete_machine', machine_name=machine_name) }}', type: 'DELETE' });window.location = '/';" class="btn btn-danger">Remove the machine <span class="glyphicon glyphicon glyphicon-trash"></span></button>
 			{% endif %}
 		</div>
 		{% endif %}

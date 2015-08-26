@@ -33,7 +33,11 @@
 		    		<div class="row"><br></div>
 		    		<div class="row">
 		    			<div class="col-sm-2"><strong>Description:</strong></div>
-		    			<div class="col-sm-10">{{ description }}</div>
+		    			<div class="col-sm-10">
+		    			{%for description_line in description %}
+		    				<p>{{ description_line }}</p>
+		    			{% endfor %} 
+		    			</div>
 		    		</div>
 		    		{% if show_email %}
 		    		<div class="row"><br></div>
@@ -58,7 +62,7 @@
 				</a>
 				{% if authoraize_user %}
 				<div class="list-group-item button-item col-xs-1">
-					<button onclick="$.ajax({ url:'{{ url_for('MachineController:delete_machine', machine_name=endpoint) }}', type: 'DELETE' });window.location = '/{{ user }}';" class="btn-lg btn-danger"><span class="glyphicon glyphicon glyphicon-remove"></span></button>
+					<button onclick="$.ajax({ url:'{{ url_for('MachineController:delete_machine', machine_name=endpoint) }}', type: 'DELETE' });window.location = '/{{ user }}';" class="btn-lg btn-danger"><span class="glyphicon glyphicon glyphicon-trash"></span></button>
 				</div>
 				{% endif %}
 			{% endfor %}
