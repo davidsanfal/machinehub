@@ -101,5 +101,4 @@ class AuthController(FlaskView):
     def unconfirmed(self):
         if current_user.confirmed:
             return redirect('MachinehubController:index')
-        flash('Please confirm your account!', 'warning')
         return render_template('user/unconfirmed.html')

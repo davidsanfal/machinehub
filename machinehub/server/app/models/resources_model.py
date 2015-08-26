@@ -51,7 +51,6 @@ def save(resource, dest, extensions=None, pattern_extensions=None):
         except InvalidNameException as e:
             raise ForbiddenException(e)
         try:
-            print os.path.join(dest, name)
             os.makedirs(os.path.join(dest, name))
         except:
             pass

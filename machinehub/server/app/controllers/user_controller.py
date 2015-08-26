@@ -35,7 +35,7 @@ class UserController(FlaskView):
         return render_template('user/profile.html',
                                user=username,
                                name=user.name,
-                               description=user.description,
+                               description=user.description.split('\n'),
                                show_email=user.show_email,
                                email=user.email,
                                authoraize_user=authoraize_user,

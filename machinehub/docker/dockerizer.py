@@ -55,5 +55,4 @@ def dockerize(machine, machine_id):
                     stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
 
-    print stdout, stderr
     return stdout, stderr

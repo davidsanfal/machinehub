@@ -31,7 +31,6 @@ class MachineController(FlaskView):
 
     @route('/<path:machine_name>', methods=['GET'])
     def machine(self, machine_name):
-        print machine_name
         show_stl = False
         if machine_name not in self.machines_manager:
             return render_template('404.html'), 404
@@ -107,7 +106,6 @@ class MachineController(FlaskView):
                 machines = []
                 for uploaded_file in uploaded_files:
                     name = upload_machine(uploaded_file, self.machines_manager)
-                    print name
                     if name:
                         add_machine_to_user(name)
                         machines.append(name)

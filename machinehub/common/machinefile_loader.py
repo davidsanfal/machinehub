@@ -24,6 +24,8 @@ class MachineParser(object):
         doc_lines = []
         inputs_lines = []
         outputs_lines = []
+        sysdeps_lines = []
+        engines_lines = []
         pattern = re.compile("^\[([a-z_]{2,50})\]")
         current_lines = []
         for line in text.splitlines():
@@ -40,6 +42,10 @@ class MachineParser(object):
                     inputs_lines = current_lines
                 elif group == 'outputs':
                     outputs_lines = current_lines
+                elif group == 'sysdeps':
+                    sysdeps_lines = current_lines
+                elif group == 'engines':
+                    engines_lines = current_lines
                 else:
                     raise MachinehubException("MachineParser: Unrecognized field '%s'" % group)
             else:
@@ -47,6 +53,10 @@ class MachineParser(object):
         self.doc = DocMachine(doc_lines)
         self.inputs = InputsMachine(inputs_lines).inputs
         self.outputs = OutputsMachine(outputs_lines).extensions
+        _sysdeps = DepsMachine(sysdeps_lines)
+        self.sysdeps, self.pipdeps = _sysdeps.sysdeps, _sysdeps.pip
+        _engines = EnginesMachine(engines_lines)
+        self.engine, self.python_version = _engines.engine, _engines.python_version
 
 
 class DocMachine(object):
@@ -55,6 +65,7 @@ class DocMachine(object):
         title = []
         description = []
         pattern = re.compile("^\-([a-z_]{2,50})\-")
+        current_lines = []
         for line in lines:
             m = pattern.match(line)
             if m:
@@ -114,6 +125,7 @@ class OutputsMachine(object):
     def __init__(self, lines):
         self.extensions = ['stl']
         pattern = re.compile("^\-([a-z_]{2,50})\-")
+        current_lines = []
         for line in lines:
             m = pattern.match(line)
             if m:
@@ -130,15 +142,16 @@ class DepsMachine(object):
         self.sysdeps = []
         self.pip = []
         pattern = re.compile("^\-([a-z_]{2,50})\-")
+        current_lines = []
         for line in lines:
             m = pattern.match(line)
             if m:
                 group = m.group(1)
                 current_lines = []
                 if group == 'system':
-                    self.system_deps = current_lines
+                    self.sysdeps = current_lines
                 if group == 'pip':
-                    self.python_deps = current_lines
+                    self.pip = current_lines
             else:
                 current_lines.append(line)
 
@@ -148,14 +161,18 @@ class EnginesMachine(object):
         self.engine = None
         self.python_version = None
         pattern = re.compile("^\-([a-z_]{2,50})\-")
+        current_lines = []
         for line in lines:
             m = pattern.match(line)
             if m:
                 group = m.group(1)
                 current_lines = []
                 if group == 'engine':
-                    self.engine = current_lines[0]
+                    self.engine = current_lines
                 if group == 'python':
-                    self.python_version = current_lines[0]
+                    self.python_version = current_lines
             else:
                 current_lines.append(line)
+
+        self.engine = self.engine[0] if self.engine else None
+        self.python_version = self.python_version[0] if self.python_version else None
