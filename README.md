@@ -26,6 +26,7 @@ sudo apt-get install freecad freecad-doc
 # Install Docker
 sudo apt-get install wget
 wget -qO- https://get.docker.com/ | sh
+sudo service docker start
 ```
 
 `Warning`
