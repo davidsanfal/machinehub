@@ -102,7 +102,7 @@ class MachineManager(object):
         origin = per_page * (page - 1)
         end = origin + per_page
         machines = self._machines.keys()[origin:end] if self.count > origin + per_page \
-            else self._machines.keys()[origin:]
+            else list(self._machines.keys())[origin:]
         info = []
         for machine in machines:
             info.append((machine, self._machines[machine]['doc']))
