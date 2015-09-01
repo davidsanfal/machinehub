@@ -109,7 +109,7 @@ class MachineManager(object):
         origin = 0
         if self.count > 7:
             origin = self.count-8
-        for machine in self._machines.keys()[origin:]:
+        for machine in list(self._machines.keys())[origin:]:
             info.append((machine, self._machines[machine]['doc']))
         return info
 
