@@ -2,12 +2,11 @@
     Get variables from environment.
     Automatically handle types inferring datatype from default value.
 """
-from types import NoneType
 import os
 
 
 default_type = {str: lambda x: x,
-                NoneType: lambda x: x,
+                type(None): lambda x: x,
                 int: lambda x: int(x),
                 float: lambda x: float(x),
                 list: lambda x: x.split(","),

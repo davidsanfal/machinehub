@@ -58,7 +58,7 @@ class MachinehubController(FlaskView):
 
         def chunks(l, n):
             """Yield successive n-sized chunks from l."""
-            for i in xrange(0, len(l), n):
+            for i in iter(range(0, len(l), n)):
                 yield l[i:i+n]
         splited_machines_info = list(chunks(machines_info, 4))
         return render_template('home.html',
