@@ -14,6 +14,7 @@ from machinehub.server.app.models.machine_model import MachineModel, add_machine
 from machinehub.server.app.models.resources_model import upload_machine
 from flask.helpers import url_for, flash
 from werkzeug.utils import redirect
+from machinehub.server.app.utils.decorators import check_confirmed
 
 
 types = {'int': int,
@@ -28,7 +29,7 @@ class MachineController(FlaskView):
     def __init__(self):
         self.machines_manager = MachineManager()
 
-    @route('/<machine_name>', methods=['GET'])
+    @route('/<path:machine_name>', methods=['GET'])
     def machine(self, machine_name):
         show_stl = False
         if machine_name not in self.machines_manager:
@@ -45,7 +46,7 @@ class MachineController(FlaskView):
                                machine_name=machine_name,
                                authoraize_user=user_is_owner(machine_name))
 
-    @route('/<machine_name>', methods=['POST'])
+    @route('/<path:machine_name>', methods=['POST'])
     def post_machine(self, machine_name):
         show_stl = False
         if machine_name not in self.machines_manager:
@@ -64,7 +65,7 @@ class MachineController(FlaskView):
                     values[name] = value.data
             current_folder = os.getcwd()
             os.chdir(os.path.join(MACHINES_FOLDER, machine_name))
-            file_name = '%s_%s.stl' % (machine_name, dict_sha1(values))
+            file_name = '%s_%s.stl' % (machine_name.replace('/', '_'), dict_sha1(values))
             file_url = os.path.join('machines', machine_name, MACHINESOUT, file_name)
             file_path = os.path.join(UPLOAD_FOLDER, file_url)
             if not os.path.exists(file_path) or not values:
@@ -82,8 +83,9 @@ class MachineController(FlaskView):
                                machine_name=machine_name,
                                authoraize_user=user_is_owner(machine_name))
 
-    @route('/<machine_name>', methods=['DELETE'])
+    @route('/<path:machine_name>', methods=['DELETE'])
     @login_required
+    @check_confirmed
     def delete_machine(self, machine_name):
         if machine_name not in self.machines_manager:
             return render_template('404.html'), 404
@@ -96,6 +98,7 @@ class MachineController(FlaskView):
 
     @route('/new', methods=['GET', 'POST'])
     @login_required
+    @check_confirmed
     def new(self):
         if request.method == 'POST':
             uploaded_files = request.files.getlist("file[]")

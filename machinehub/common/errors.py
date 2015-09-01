@@ -12,3 +12,7 @@ class NotMachineHub(Exception):
 
 class ForbiddenException(Exception):
     pass
+
+
+class InvalidNameException(Exception):
+    pass

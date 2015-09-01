@@ -46,14 +46,14 @@ def create_image(machine, system_deps, python_deps):
 
 def dockerize(machine, machine_id):
     machine_path = os.path.join(MACHINES_FOLDER, machine)
-    container_name = '%s%s' % (machine, machine_id)
+    container_name = '%s%s' % (machine.replace('/', '.'), machine_id)
     process = Popen(['docker', 'run', '--rm',
                      '-v', '%s:/worker/machine' % (machine_path),
                      '--name', container_name,
                      machine,
-                     'python', 'builder.py', machine_id, machine],
+                     'python', 'builder.py', machine_id, machine.split('/')[1]],
                     stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
 
     print(stdout, stderr)
-    return stdout, stderr
+

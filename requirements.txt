@@ -4,3 +4,4 @@ flask-classy==0.6.10
 flask-login==0.2.11
 sqlalchemy
 flask-sqlalchemy==2.0
+Flask-Mail==0.9.1

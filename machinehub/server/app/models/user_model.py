@@ -5,16 +5,18 @@ from machinehub.server.app import db, login_manager
 class UserModel(db.Model):
     __tablename__ = "users"
     id = db.Column('user_id', db.Integer, primary_key=True)
-    username = db.Column('username', db.String(20), unique=True, index=True)
-    password = db.Column('password', db.String(10))
+    username = db.Column('username', db.String(50), unique=True, index=True)
+    password = db.Column('password', db.String(50))
     email = db.Column('email', db.String(50), unique=True, index=True)
     show_email = db.Column('show_email', db.Boolean)
     description = db.Column('description', db.String)
     name = db.Column('name', db.String(50))
     registered_on = db.Column('registered_on', db.DateTime)
     machines = db.relationship('MachineModel', backref='user', lazy='dynamic')
+    confirmed = db.Column(db.Boolean, nullable=False, default=False)
+    confirmed_on = db.Column(db.DateTime, nullable=True)
 
-    def __init__(self, username, password, email):
+    def __init__(self, username, password, email, confirmed, confirmed_on=None):
         self.username = username
         self.password = password
         self.email = email
@@ -22,6 +24,8 @@ class UserModel(db.Model):
         self.description = ""
         self.name = ""
         self.show_email = False
+        self.confirmed = confirmed
+        self.confirmed_on = confirmed_on
 
     @property
     def machine_names(self):

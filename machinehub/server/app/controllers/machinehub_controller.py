@@ -5,6 +5,7 @@ from machinehub.server.app.models.machine_model import MachineManager
 from werkzeug.exceptions import abort
 from machinehub.server.app.models.explorer_model import Pagination
 from machinehub.config import UPLOAD_FOLDER
+from machinehub.common.model.machine_name import MachineName
 
 
 PER_PAGE = 20
@@ -45,9 +46,15 @@ class MachinehubController(FlaskView):
         machines_info = []
         machines = self.machines_manager.get_last_machines()
         for name, doc in machines:
-            url = url_for('MachineController:machine', machine_name=name)
+            machine_name = MachineName(name)
+            machine_url = url_for('MachineController:machine', machine_name=name)
+            user_url = url_for('UserController:user', username=machine_name.user)
             image = doc.images[0] if doc.images else None
-            machines_info.append((image, doc.title or "", doc.description or "", url))
+            machines_info.append((image,
+                                  doc.title or "",
+                                  doc.description or "",
+                                  machine_name.user, user_url,
+                                  machine_name.name, machine_url))
 
         def chunks(l, n):
             """Yield successive n-sized chunks from l."""
