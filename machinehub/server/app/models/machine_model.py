@@ -33,26 +33,28 @@ class MachineManager(object):
                                if os.path.isdir(os.path.join(MACHINES_FOLDER, m))]
 
             for name in machine_folders:
-                try:
-                    machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
-                    readme = os.path.join(MACHINES_FOLDER, name, 'readme.md')
-                    if os.path.exists(machinefile):
-                        doc, inputs = load_machinefile(machinefile)
-                        readme_text = None
-                        if os.path.exists(readme):
-                            with open(readme, 'r') as f:
-                                readme_text = f.read()
-                        self._machines[name] = {'doc': doc,
-                                                'inputs': inputs,
-                                                'readme': readme_text}
-                        create_image(name, [], [])
-                except NotMachineHub:
-                    continue
+                if name not in self._machines:
+                    try:
+                        machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
+                        readme = os.path.join(MACHINES_FOLDER, name, 'readme.md')
+                        if os.path.exists(machinefile):
+                            doc, inputs = load_machinefile(machinefile)
+                            readme_text = None
+                            if os.path.exists(readme):
+                                with open(readme, 'r') as f:
+                                    readme_text = f.read()
+                            self._machines[name] = {'doc': doc,
+                                                    'inputs': inputs,
+                                                    'readme': readme_text}
+                            create_image(name, [], [])
+                    except NotMachineHub:
+                        continue
         except:
             pass
 
     @property
     def all_machines(self):
+        self.search()
         info = []
         for machine in self._machines.keys():
             info.append((machine, self._machines[machine]['doc']))
@@ -60,21 +62,36 @@ class MachineManager(object):
 
     @property
     def count(self):
+        self.search()
         return len(self._machines.keys())
 
     def update(self, machinefile_path, name):
         try:
             self._add(name, machinefile_path)
+            add_machine_to_user(name)
         except NotMachineHub:
             raise NotMachineHub()
         return name
 
     def machine(self, name):
-        try:
-            machine = self._machines[name]
-            return machine['doc'], machine['inputs']
-        except:
-            raise NotFoundException()
+        machine = self._machines.get(name, None)
+        if not machine:
+            try:
+                machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
+                readme = os.path.join(MACHINES_FOLDER, name, 'readme.md')
+                if os.path.exists(machinefile):
+                    doc, inputs = load_machinefile(machinefile)
+                    readme_text = None
+                    if os.path.exists(readme):
+                        with open(readme, 'r') as f:
+                            readme_text = f.read()
+                    self._machines[name] = {'doc': doc,
+                                            'inputs': inputs,
+                                            'readme': readme_text}
+                    machine = self._machines[name]
+            except NotMachineHub:
+                raise NotFoundException()
+        return machine['doc'], machine['inputs']
 
     def readme(self, name):
         try:
@@ -84,6 +101,7 @@ class MachineManager(object):
             raise NotFoundException()
 
     def machines(self, names):
+        self.search()
         try:
             info = []
             for name in names:
@@ -101,6 +119,7 @@ class MachineManager(object):
             pass
 
     def _add(self, name, machinefile_path):
+        self.search()
         out_folder = os.path.join(MACHINES_FOLDER, name, MACHINESOUT)
         doc, inputs = load_machinefile(machinefile_path)
         if os.path.exists(out_folder) and name in self._machines.keys():
@@ -118,6 +137,7 @@ class MachineManager(object):
         create_image(name, [], [])
 
     def get_machines_for_page(self, page, per_page):
+        self.search()
         origin = per_page * (page - 1)
         end = origin + per_page
         machines = self._machines.keys()[origin:end] if self.count > origin + per_page \
@@ -128,6 +148,7 @@ class MachineManager(object):
         return info
 
     def get_last_machines(self):
+        self.search()
         info = []
         origin = 0
         if self.count > 7:
