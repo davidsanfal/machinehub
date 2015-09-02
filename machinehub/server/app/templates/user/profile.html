@@ -58,7 +58,11 @@
 				<a href="{{ url }}"  class="list-group-item col-xs-12">
 				{% endif %}
 					<h4 class="list-group-item-heading">{{ endpoint }}</h4>
-					<p class="list-group-item-text">{{ doc }}</p>
+					{% if doc %}
+						<p class="list-group-item-text">{{ doc }}</p>
+					{% else %}
+						<p class="list-group-item-text">No description</p>
+					{% endif %}
 				</a>
 				{% if authoraize_user %}
 				<div class="list-group-item button-item col-xs-1">

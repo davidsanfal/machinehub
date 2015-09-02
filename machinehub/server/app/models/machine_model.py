@@ -35,10 +35,16 @@ class MachineManager(object):
             for name in machine_folders:
                 try:
                     machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
+                    readme = os.path.join(MACHINES_FOLDER, name, 'readme.md')
                     if os.path.exists(machinefile):
                         doc, inputs = load_machinefile(machinefile)
+                        readme_text = None
+                        if os.path.exists(readme):
+                            with open(readme, 'r') as f:
+                                readme_text = f.read()
                         self._machines[name] = {'doc': doc,
-                                                'inputs': inputs}
+                                                'inputs': inputs,
+                                                'readme': readme_text}
                         create_image(name, [], [])
                 except NotMachineHub:
                     continue
@@ -70,6 +76,13 @@ class MachineManager(object):
         except:
             raise NotFoundException()
 
+    def readme(self, name):
+        try:
+            machine = self._machines[name]
+            return machine['readme']
+        except:
+            raise NotFoundException()
+
     def machines(self, names):
         try:
             info = []
@@ -92,8 +105,14 @@ class MachineManager(object):
         doc, inputs = load_machinefile(machinefile_path)
         if os.path.exists(out_folder) and name in self._machines.keys():
             shutil.rmtree(out_folder)
+        readme = os.path.join(MACHINES_FOLDER, name, 'readme.md')
+        readme_text = None
+        if os.path.exists(readme):
+            with open(readme, 'r') as f:
+                readme_text = f.read()
         self._machines[name] = {'doc': doc,
-                                'inputs': inputs}
+                                'inputs': inputs,
+                                'readme': readme_text}
         if not os.path.exists(out_folder):
             os.makedirs(out_folder)
         create_image(name, [], [])

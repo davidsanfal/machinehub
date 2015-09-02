@@ -10,6 +10,10 @@ img.machinehub {
 	max-width: 50%;
 }
 
+body img {
+	margin: 0px 0;
+}
+
 .stl-viewr {
 	height:600px;
 	min-width:100%;
