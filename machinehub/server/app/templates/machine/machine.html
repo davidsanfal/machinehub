@@ -37,37 +37,41 @@
 			{% endif %}
 		</div>
 		{% endif %}
-
-		{% if images %}
-		<div class="container">
-			<div id="machine-carusel" class="carousel slide" data-ride="carousel">
-				<!-- Indicators -->
-				<ol class="carousel-indicators">			    
-			    {% set counter = 0 %}
-			    {% for machine_image in images %}
-					<li data-target="#machine-carusel" data-slide-to={{ counter + loop.index0 }} {% if counter + loop.index0 == 0 %} class="active" {% endif %}></li>
-				{% endfor %}
-				</ol>
-				<!-- Wrapper for slides -->
-				<div class="carousel-inner" role="listbox">
-				{% set counter = 0 %}
-				{% for machine_image in images %}
-				    	<div class="item{% if counter + loop.index0 == 0 %} active{% endif %}">
-				      		<img class="img-responsive center-block" src={{ machine_image }}>
-				    	</div>
-				{% endfor %}
+	
+		{% if readme %}
+		<xmp theme="vanilla" style="display:none;"> {{ readme }} </xmp>
+		<script src="http://strapdownjs.com/v/0.2/strapdown.js"></script>
+		{% else %}
+			{% if images %}
+			<div class="container">
+				<div id="machine-carusel" class="carousel slide" data-ride="carousel">
+					<!-- Indicators -->
+					<ol class="carousel-indicators">			    
+				    {% set counter = 0 %}
+				    {% for machine_image in images %}
+						<li data-target="#machine-carusel" data-slide-to={{ counter + loop.index0 }} {% if counter + loop.index0 == 0 %} class="active" {% endif %}></li>
+					{% endfor %}
+					</ol>
+					<!-- Wrapper for slides -->
+					<div class="carousel-inner" role="listbox">
+					{% set counter = 0 %}
+					{% for machine_image in images %}
+					    	<div class="item{% if counter + loop.index0 == 0 %} active{% endif %}">
+					      		<img class="img-responsive center-block" src={{ machine_image }}>
+					    	</div>
+					{% endfor %}
+					</div>
+				  	<!-- Left and right controls -->
+				  	<a class="left carousel-control" href="#machine-carusel" role="button" data-slide="prev">
+				    	<span class="glyphicon glyphicon-chevron-left" aria-hidden="false"></span>
+				  	</a>
+				  	<a class="right carousel-control" href="#machine-carusel" role="button" data-slide="next">
+				    	<span class="glyphicon glyphicon-chevron-right" aria-hidden="false"></span>
+				  	</a>
 				</div>
-			  	<!-- Left and right controls -->
-			  	<a class="left carousel-control" href="#machine-carusel" role="button" data-slide="prev">
-			    	<span class="glyphicon glyphicon-chevron-left" aria-hidden="false"></span>
-			  	</a>
-			  	<a class="right carousel-control" href="#machine-carusel" role="button" data-slide="next">
-			    	<span class="glyphicon glyphicon-chevron-right" aria-hidden="false"></span>
-			  	</a>
 			</div>
-		</div>
-	  	{% endif %}
-
+		  	{% endif %}
+		{% endif %}
 		<div class="container text-center">
 			<form method=post action="{{ url_for('MachineController:post_machine', machine_name=machine_name) }}#viewer">
 				<dl>

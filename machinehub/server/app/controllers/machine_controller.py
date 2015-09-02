@@ -35,11 +35,13 @@ class MachineController(FlaskView):
         if machine_name not in self.machines_manager:
             return render_template('404.html'), 404
         doc, inputs = self.machines_manager.machine(machine_name)
+        readme = self.machines_manager.readme(machine_name)
         form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
         return render_template('machine/machine.html',
                                title=doc.title,
                                description=doc.description,
                                images=doc.images,
+                               readme=readme,
                                form=form,
                                show_stl=show_stl,
                                file_name="",
@@ -52,6 +54,7 @@ class MachineController(FlaskView):
         if machine_name not in self.machines_manager:
             return render_template('404.html'), 404
         doc, inputs = self.machines_manager.machine(machine_name)
+        readme = self.machines_manager.readme(machine_name)
         form = metaform('Form_%s' % str(machine_name), inputs)(request.form)
         file_url = ""
 
@@ -77,6 +80,7 @@ class MachineController(FlaskView):
                                title=doc.title,
                                description=doc.description,
                                images=doc.images,
+                               readme=readme,
                                form=form,
                                show_stl=show_stl,
                                file_name=file_url,
