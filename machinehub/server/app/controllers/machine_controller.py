@@ -111,7 +111,6 @@ class MachineController(FlaskView):
                 for uploaded_file in uploaded_files:
                     name = upload_machine(uploaded_file, self.machines_manager)
                     if name:
-                        add_machine_to_user(name)
                         machines.append(name)
                 if len(machines) == 1:
                     return redirect(url_for('MachineController:machine', machine_name=machines[0]))
