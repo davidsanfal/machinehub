@@ -68,6 +68,7 @@ class MachineManager(object):
         return len(self._machines.keys())
 
     def update(self, machinefile_path, name):
+        self.search()
         try:
             self._add(name, machinefile_path)
             add_machine_to_user(name)
@@ -83,6 +84,7 @@ class MachineManager(object):
         return machine['doc'], machine['inputs']
 
     def readme(self, name):
+        self.search()
         try:
             machine = self._machines[name]
             return machine['readme']
