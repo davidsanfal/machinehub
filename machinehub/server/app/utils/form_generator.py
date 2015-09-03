@@ -116,5 +116,5 @@ def filter_str(var):
     if type(var) is str:
         if (var.startswith('\'') and var.endswith('\'')) or \
            (var.startswith('\"') and var.endswith('\"')):
-            result = str(var[1:-1].decode('utf-8'))
+            result = str(var[1:-1])
     return result
