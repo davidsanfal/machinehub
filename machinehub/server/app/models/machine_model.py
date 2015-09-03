@@ -76,23 +76,10 @@ class MachineManager(object):
         return name
 
     def machine(self, name):
+        self.search()
         machine = self._machines.get(name, None)
         if not machine:
-            try:
-                machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
-                readme = os.path.join(MACHINES_FOLDER, name, 'readme.md')
-                if os.path.exists(machinefile):
-                    doc, inputs = load_machinefile(machinefile)
-                    readme_text = None
-                    if os.path.exists(readme):
-                        with open(readme, 'r') as f:
-                            readme_text = f.read()
-                    self._machines[name] = {'doc': doc,
-                                            'inputs': inputs,
-                                            'readme': readme_text}
-                    machine = self._machines[name]
-            except NotMachineHub:
-                raise NotFoundException()
+            raise NotFoundException()
         return machine['doc'], machine['inputs']
 
     def readme(self, name):
