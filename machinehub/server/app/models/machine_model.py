@@ -31,7 +31,9 @@ class MachineManager(object):
             all_machines = [m.machinename for m in MachineModel.query.all()]
             machine_folders = [m for m in all_machines
                                if os.path.isdir(os.path.join(MACHINES_FOLDER, m))]
-
+            diff = set(self._machines) - set(all_machines)
+            for machine in diff:
+                del self._machines[machine]
             for name in machine_folders:
                 if name not in self._machines:
                     try:
