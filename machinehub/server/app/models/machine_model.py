@@ -76,7 +76,7 @@ class MachineManager(object):
         try:
             info = []
             for name in names:
-                doc, _ = self.machine()
+                doc, _ = self.machine(name)
                 info.append((name, doc))
             return info
         except:
