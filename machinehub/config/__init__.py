@@ -48,7 +48,7 @@ class BaseConfig(object):
     DEBUG_TB_ENABLED = False
     DEBUG_TB_INTERCEPT_REDIRECTS = False
     SEND_FILE_MAX_AGE_DEFAULT = 0
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///%s/users.db' % machinehub_path
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///%s/machinehub.db' % machinehub_path
     UPLOAD_FOLDER = UPLOAD_FOLDER
 
     # mail settings
