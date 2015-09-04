@@ -2,101 +2,82 @@ import os
 from machinehub.config import MACHINES_FOLDER, MACHINESOUT, MACHINEFILE
 from machinehub.common.errors import NotFoundException, NotMachineHub
 import shutil
-from machinehub.common.machinefile_loader import load_machinefile
+from machinehub.common.machinefile_loader import load_machinefile, MachineParser
 import json
 from machinehub.common.sha import date_sha1
 from machinehub.docker.dockerizer import dockerize, create_image
 from machinehub.server.app import db
 from flask_login import current_user
+from datetime import datetime
 
 
 class MachineManager(object):
-    _instance = None
-
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(MachineManager, cls).__new__(cls, *args, **kwargs)
-            cls._instance._machines = {}
-            cls._instance.search()
-        return cls._instance
 
     def __contains__(self, machine):
-        if machine in self._machines.keys():
+        if machine in [m.machinename for m in MachineModel.query.all()]:
             return True
         else:
             return False
 
-    def search(self):
-        try:
-            all_machines = [m.machinename for m in MachineModel.query.all()]
-            machine_folders = [m for m in all_machines
-                               if os.path.isdir(os.path.join(MACHINES_FOLDER, m))]
-            diff = set(self._machines) - set(all_machines)
-            for machine in diff:
-                del self._machines[machine]
-            for name in machine_folders:
-                if name not in self._machines:
-                    try:
-                        machinefile = os.path.join(MACHINES_FOLDER, name, MACHINEFILE)
-                        readme = os.path.join(MACHINES_FOLDER, name, 'readme.md')
-                        if os.path.exists(machinefile):
-                            doc, inputs = load_machinefile(machinefile)
-                            readme_text = None
-                            if os.path.exists(readme):
-                                with open(readme, 'r') as f:
-                                    readme_text = f.read()
-                            self._machines[name] = {'doc': doc,
-                                                    'inputs': inputs,
-                                                    'readme': readme_text}
-                            create_image(name, [], [])
-                    except NotMachineHub:
-                        continue
-        except:
-            pass
-
     @property
     def all_machines(self):
-        self.search()
         info = []
-        for machine in self._machines.keys():
-            info.append((machine, self._machines[machine]['doc']))
+        for machine in MachineModel.query.all():
+            doc, _ = machine.info
+            info.append((machine.machinename, doc))
         return info
 
     @property
     def count(self):
-        self.search()
-        return len(self._machines.keys())
+        return len(MachineModel.query.all())
 
     def update(self, machinefile_path, name):
-        self.search()
         try:
-            self._add(name, machinefile_path)
-            add_machine_to_user(name)
+            out_folder = os.path.join(MACHINES_FOLDER, name, MACHINESOUT)
+            machinefile = load_machinefile(machinefile_path)
+            if os.path.exists(out_folder):
+                shutil.rmtree(out_folder)
+            if name in [m.machinename for m in current_user.machines.all()]:
+                machine = MachineModel.query.filter_by(machinename=name).first()
+                db.session.delete(machine)
+                db.session.commit()
+
+            readme_path = os.path.join(MACHINES_FOLDER, name, 'readme.md')
+            readme = None
+            if os.path.exists(readme_path):
+                with open(readme_path, 'r') as f:
+                    readme = f.read()
+
+            os.makedirs(out_folder)
+            create_image(name, [], [])
+            machine = MachineModel(name, machinefile, readme)
+            machine.user = current_user
+            db.session.add(machine)
+            db.session.commit()
+
         except NotMachineHub:
             raise NotMachineHub()
         return name
 
     def machine(self, name):
-        self.search()
-        machine = self._machines.get(name, None)
+        machine = MachineModel.query.filter_by(machinename=name).first()
         if not machine:
             raise NotFoundException()
-        return machine['doc'], machine['inputs']
+        return machine.info
 
     def readme(self, name):
-        self.search()
         try:
-            machine = self._machines[name]
-            return machine['readme']
+            machine = MachineModel.query.filter_by(machinename=name).first()
+            return machine.readme
         except:
             raise NotFoundException()
 
     def machines(self, names):
-        self.search()
         try:
             info = []
             for name in names:
-                info.append((name, self._machines[name]['doc']))
+                doc, _ = self.machine()
+                info.append((name, doc))
             return info
         except:
             raise NotFoundException()
@@ -104,48 +85,31 @@ class MachineManager(object):
     def delete(self, name):
         if os.path.exists(os.path.join(MACHINES_FOLDER, name)):
             shutil.rmtree(os.path.join(MACHINES_FOLDER, name))
-        try:
-            del self._machines[name]
-        except:
-            pass
-
-    def _add(self, name, machinefile_path):
-        self.search()
-        out_folder = os.path.join(MACHINES_FOLDER, name, MACHINESOUT)
-        doc, inputs = load_machinefile(machinefile_path)
-        if os.path.exists(out_folder) and name in self._machines.keys():
-            shutil.rmtree(out_folder)
-        readme = os.path.join(MACHINES_FOLDER, name, 'readme.md')
-        readme_text = None
-        if os.path.exists(readme):
-            with open(readme, 'r') as f:
-                readme_text = f.read()
-        self._machines[name] = {'doc': doc,
-                                'inputs': inputs,
-                                'readme': readme_text}
-        if not os.path.exists(out_folder):
-            os.makedirs(out_folder)
-        create_image(name, [], [])
+        machine = MachineModel.query.filter_by(machinename=name).first()
+        db.session.delete(machine)
+        db.session.commit()
 
     def get_machines_for_page(self, page, per_page):
-        self.search()
+        all_machines = MachineModel.query.all()
         origin = per_page * (page - 1)
         end = origin + per_page
-        machines = self._machines.keys()[origin:end] if self.count > origin + per_page \
-            else list(self._machines.keys())[origin:]
+        machines = all_machines[origin:end] if self.count > origin + per_page \
+            else all_machines[origin:]
         info = []
         for machine in machines:
-            info.append((machine, self._machines[machine]['doc']))
+            doc, _ = machine.info
+            info.append((machine.machinename, doc))
         return info
 
     def get_last_machines(self):
-        self.search()
+        all_machines = MachineModel.query.all()
         info = []
         origin = 0
         if self.count > 7:
             origin = self.count-8
-        for machine in list(self._machines.keys())[origin:]:
-            info.append((machine, self._machines[machine]['doc']))
+        for machine in all_machines[origin:]:
+            doc, _ = machine.info
+            info.append((machine.machinename, doc))
         return info
 
     def work(self, values, name):
@@ -161,9 +125,22 @@ class MachineModel(db.Model):
     id = db.Column('machines_id', db.Integer, primary_key=True)
     machinename = db.Column('machinename', db.String(100), unique=True, index=True)
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    readme = db.Column('readme', db.String)
+    machinefile = db.Column('machinefile', db.String)
+    created_on = db.Column('created_on', db.DateTime)
+    version = db.Column('version', db.Integer)
 
-    def __init__(self, machinename):
+    def __init__(self, machinename, machinefile, readme):
         self.machinename = machinename
+        self.machinefile = machinefile
+        self.readme = readme
+        self.created_on = datetime.utcnow()
+        self.version = 1
+
+    @property
+    def info(self):
+        info = MachineParser(self.machinefile)
+        return info.doc, info.inputs
 
 
 def add_machine_to_user(name):

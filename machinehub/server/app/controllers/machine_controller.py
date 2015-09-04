@@ -94,9 +94,6 @@ class MachineController(FlaskView):
         if machine_name not in self.machines_manager:
             return render_template('404.html'), 404
         if user_is_owner(machine_name):
-            machine = MachineModel.query.filter_by(machinename=machine_name).first()
-            db.session.delete(machine)
-            db.session.commit()
             self.machines_manager.delete(machine_name)
         return '', 200
 

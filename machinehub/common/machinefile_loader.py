@@ -11,8 +11,9 @@ def load_machinefile(machinefile_path):
         raise MachinehubException("%s not found!" % machinefile_path)
     try:
         with open(machinefile_path, 'r') as f:
-            machinefile = MachineParser(f.read())
-            return machinefile.doc, machinefile.inputs
+            machinefile = f.read()
+            MachineParser(machinefile)
+            return machinefile
     except MachinehubException as e:  # re-raise with file name
         raise MachinehubException("%s: %s" % (machinefile_path, str(e)))
 
