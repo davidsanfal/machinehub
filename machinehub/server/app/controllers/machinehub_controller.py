@@ -6,6 +6,7 @@ from werkzeug.exceptions import abort
 from machinehub.server.app.models.explorer_model import Pagination
 from machinehub.config import UPLOAD_FOLDER
 from machinehub.common.model.machine_name import MachineName
+from machinehub.server.app.models.user_model import get_users_for_page
 
 
 PER_PAGE = 20
@@ -28,12 +29,28 @@ class MachinehubController(FlaskView):
     @route('/machines/<int:page>')
     def machines(self, page):
         links = []
-        count = self.machines_manager.count
-        machines = self.machines_manager.get_machines_for_page(page, PER_PAGE)
+        machines, count = self.machines_manager.get_machines_for_page(page, PER_PAGE)
         for name, doc in machines:
             url = url_for('MachineController:machine', machine_name=name)
-            links.append((url, name, doc.title or "", doc.description or ""))
+            desc = doc.description if len(doc.description) <= 280 else doc.description[:277] + '...'
+            links.append((url, name, doc.title or "", desc or ""))
         if not machines and page != 1:
+            abort(404)
+        pagination = Pagination(page, PER_PAGE, count)
+        return render_template('explorer.html',
+                               pagination=pagination,
+                               links=links
+                               )
+
+    @route('/users/<int:page>')
+    def users(self, page):
+        links = []
+        users, count = get_users_for_page(page, PER_PAGE)
+        for name, desc in users:
+            url = url_for('UserController:user', username=name)
+            desc = desc if len(desc) <= 280 else desc[:277] + '...'
+            links.append((url, name, None, desc))
+        if not users and page != 1:
             abort(404)
         pagination = Pagination(page, PER_PAGE, count)
         return render_template('explorer.html',

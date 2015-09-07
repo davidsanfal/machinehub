@@ -50,3 +50,15 @@ class UserModel(db.Model):
 @login_manager.user_loader
 def load_user(id):
     return UserModel.query.get(int(id))
+
+
+def get_users_for_page(page, per_page):
+    all_users = UserModel.query.order_by(UserModel.username).all()
+    origin = per_page * (page - 1)
+    end = origin + per_page
+    users = all_users[origin:end] if len(all_users) > origin + per_page \
+        else all_users[origin:]
+    info = []
+    for user in users:
+        info.append((user.username, user.description))
+    return info, len(all_users)
