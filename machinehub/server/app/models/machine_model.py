@@ -27,10 +27,6 @@ class MachineManager(object):
             info.append((machine.machinename, doc))
         return info
 
-    @property
-    def count(self):
-        return len(MachineModel.query.all())
-
     def update(self, machinefile_path, name):
         try:
             out_folder = os.path.join(MACHINES_FOLDER, name, MACHINESOUT)
@@ -90,23 +86,23 @@ class MachineManager(object):
         db.session.commit()
 
     def get_machines_for_page(self, page, per_page):
-        all_machines = MachineModel.query.all()
+        all_machines = MachineModel.query.order_by(MachineModel.machinename).all()
         origin = per_page * (page - 1)
         end = origin + per_page
-        machines = all_machines[origin:end] if self.count > origin + per_page \
+        machines = all_machines[origin:end] if len(all_machines) > origin + per_page \
             else all_machines[origin:]
         info = []
         for machine in machines:
             doc, _ = machine.info
             info.append((machine.machinename, doc))
-        return info
+        return info, len(all_machines)
 
     def get_last_machines(self):
-        all_machines = MachineModel.query.all()
+        all_machines = MachineModel.query.order_by(MachineModel.created_on).all()
         info = []
         origin = 0
-        if self.count > 7:
-            origin = self.count-8
+        if len(all_machines) > 7:
+            origin = len(all_machines)-8
         for machine in all_machines[origin:]:
             doc, _ = machine.info
             info.append((machine.machinename, doc))
