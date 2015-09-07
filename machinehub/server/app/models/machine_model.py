@@ -25,6 +25,7 @@ class MachineManager(object):
         for machine in MachineModel.query.all():
             doc, _ = machine.info
             info.append((machine.machinename, doc))
+        return info
 
     def update(self, machinefile_path, name):
         try:
