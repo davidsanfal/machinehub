@@ -62,6 +62,13 @@ cd machinehub
 python launcher.py
 ```
 
+gunicorn.
+
+```bash
+cd machinehub
+gunicorn -w 8 -b 127.0.0.1:5000 launcher:app
+```
+
 ## Configure
 
 ### How to change the address or the admin info
