@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 
 
-from machinehub.config import machinehub_conf
-from machinehub.server.app.webapp import app
-from machinehub.server.app import db
+from old_machinehub.config import machinehub_conf
+from old_machinehub.server.app.webapp import app
+from old_machinehub.server.app import db
 
 
 def main():
