@@ -1,7 +1,8 @@
 import logging
 from logging import StreamHandler
 import sys
-from machinehub.util.env_reader import get_env
+from machinehub.config.env_reader import get_env
+
 
 # #### LOGGER, MOVED FROM CONF BECAUSE OF MULTIPLE PROBLEM WITH CIRCULAR INCLUDES #####
 CONAN_LOGGING_LEVEL = get_env('CONAN_LOGGING_LEVEL', logging.CRITICAL)

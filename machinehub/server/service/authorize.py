@@ -99,18 +99,9 @@ class BasicAuthorizer(Authorizer):
     Reads permissions from the config file (server.cfg)
     """
 
-    def __init__(self, read_permissions, write_permissions):
-        """List of tuples with conanrefernce and users:
-
-        [(conan_reference, "user, user, user"),
-         (conan_reference2, "user3, user, user")] """
-
-        self.read_permissions = read_permissions
-        self.write_permissions = write_permissions
-
     def user_is_owner(self, username, machine_user):
 
-        if machine_user.user == username:
+        if machine_user == username:
             return
         raise ForbiddenException("Unauthorized")
 

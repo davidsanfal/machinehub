@@ -4,8 +4,8 @@ import logging
 from machinehub.config.env_reader import get_env
 import sys
 
-MACHINEHUB = '.old_machinehub'
-MACHINEHUBCONF = 'old_machinehub.conf'
+MACHINEHUB = '.machinehub'
+MACHINEHUBCONF = 'machinehub.conf'
 MACHINESOUT = 'machine_out'
 MACHINEFILE = 'machinefile.txt'
 default_machinehubconf = '''
