@@ -1,8 +1,9 @@
 from machinehub.server.rest.controllers.controller import Controller
-from bottle import request
+from bottle import request, FileUpload
 import os
 from machinehub.config import MACHINESOUT, MACHINES_FOLDER, UPLOAD_FOLDER
 from machinehub.sha import dict_sha1
+from machinehub.server.service.machine_service import MachineManager
 
 types = {'int': int,
          'float': float}
@@ -12,7 +13,9 @@ class MachinehubController(Controller):
     """
         Serve requests related with Machinehub
     """
+
     def attach_to(self, app):
+        machines_manager = MachineManager(app.authorizer)
 
         machine_route = '%s/:username/:machinename' % self.route
 
@@ -48,6 +51,7 @@ class MachinehubController(Controller):
             machine_name = os.path.join(username, machinename)
             app.authorizer.user_is_owner(auth_user, username)
 
-        @app.route("%s" % self.route, method=['PUT'])
-        def new():
-            uploaded_files = request.files.getlist("file[]")
+        @app.route(self.route, method=['PUT'])
+        def new(auth_user):
+            uploaded_file = request.files.get("fileUpload")
+            machines_manager.new(uploaded_file, auth_user)

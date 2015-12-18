@@ -5,7 +5,7 @@ from machinehub.server.crypto.jwt.jwt_credentials_manager import JWTCredentialsM
 from datetime import timedelta
 
 
-class ServerLauncher(object):
+class ServerLauncher():
     def __init__(self):
         authorizer = BasicAuthorizer()
         users = {'admin': 'pass'}

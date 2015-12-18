@@ -1,5 +1,5 @@
 '''
-    Exceptions raised and handled in Conan server.
+    Exceptions raised and handled in Machinehub server.
     These exceptions are mapped between server (as an HTTP response) and client
     through the REST API. When an error happens in server its translated to an HTTP
     error code that its sent to client. Client reads the server code and raise the
@@ -14,6 +14,14 @@ class MachinehubException(Exception):
     """
          Generic machinehub exception
     """
+    pass
+
+
+class InvalidNameException(MachinehubException):
+    pass
+
+
+class NotMachineHub(MachinehubException):
     pass
 
 

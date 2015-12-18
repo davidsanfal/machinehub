@@ -1,7 +1,7 @@
 '''
 
 This module handles user authentication and permissions
-for read or write a machinehub or package.
+for read or write a machines.
 
 This only reads from file the users and permissions.
 
@@ -18,42 +18,18 @@ from machinehub.errors import ForbiddenException
 #  ############################################
 
 
-class Authorizer(object):
-    """
-    Handles the access permissions to machinehub and packages
-    """
+class Authorizer():
+
     __metaclass__ = ABCMeta
 
     @abstractmethod
-    def check_read_conan(self, username, conan_reference):
-        """
-        username: User that request to read the machinehub
-        conan_reference: ConanFileReference
-        """
+    def user_is_owner(self, username, machine_user):
+
         raise NotImplemented()
 
     @abstractmethod
-    def check_write_conan(self, username, conan_reference):
-        """
-        username: User that request to write the machinehub
-        conan_reference: ConanFileReference
-        """
-        raise NotImplemented()
+    def user_can_edit(self, username, plain_password):
 
-    @abstractmethod
-    def check_read_package(self, username, package_reference):
-        """
-        username: User that request to read the package
-        package_reference: PackageReference
-        """
-        raise NotImplemented()
-
-    @abstractmethod
-    def check_write_package(self, username, package_reference):
-        """
-        username: User that request to write the package
-        package_reference: PackageReference
-        """
         raise NotImplemented()
 
 
@@ -65,10 +41,7 @@ class Authenticator(object):
 
     @abstractmethod
     def valid_user(self, username, plain_password):
-        """
-        username: User that request to read the machinehub
-        conan_reference: ConanFileReference
-        """
+
         raise NotImplemented()
 
 #  ########################################################
@@ -86,22 +59,19 @@ class BasicAuthenticator(Authenticator):
         self.users = users
 
     def valid_user(self, username, plain_password):
-        """
-        username: User that request to read the machinehub
-        conan_reference: ConanFileReference
-        return: True if match False if don't
-        """
         return username in self.users and self.users[username] == plain_password
 
 
 class BasicAuthorizer(Authorizer):
     """
-    Reads permissions from the config file (server.cfg)
+    Reads permissions
     """
 
-    def user_is_owner(self, username, machine_user):
-
-        if machine_user == username:
+    def user_is_owner(self, username, machine):
+        user, _ = machine.split('/')
+        if user == username:
             return
         raise ForbiddenException("Unauthorized")
 
+    def user_can_edit(self, username, machine):
+        return self.user_is_owner(username, machine)
