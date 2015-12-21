@@ -1,12 +1,12 @@
 
 import os
 from subprocess import Popen, PIPE
-from old_machinehub.config import MACHINES_FOLDER, MACHINESOUT
 from jinja2 import Template
+from machinehub.config import MACHINES_FOLDER, MACHINESOUT
 
 
 Dockerfile_template = '''
-FROM old_machinehub
+FROM machinehub
 
 ENV OUTPUT_FOLDER {{ output }}
 RUN apt-get -y update

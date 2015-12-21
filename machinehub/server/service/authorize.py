@@ -28,7 +28,7 @@ class Authorizer():
         raise NotImplemented()
 
     @abstractmethod
-    def user_can_edit(self, username, plain_password):
+    def user_can_edit(self, username, machine_user):
 
         raise NotImplemented()
 
