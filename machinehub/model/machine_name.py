@@ -1,6 +1,6 @@
-from old_machinehub.common.errors import InvalidNameException
-from old_machinehub.common.model.user_name import UserName
-from old_machinehub.common.model.complex_name import ComplexName
+from machinehub.errors import InvalidNameException
+from machinehub.model.complex_name import ComplexName
+from machinehub.model.user_name import UserName
 
 
 class MachineName(str):

@@ -1,9 +1,8 @@
 from machinehub.server.rest.controllers.controller import Controller
-from bottle import request, static_file, response
+from bottle import request, static_file
 import os
 from machinehub.server.service.machine_service import MachineManager
 from machinehub.config import MACHINES_FOLDER, MACHINESOUT
-import mimetypes
 
 
 class MachinehubController(Controller):
@@ -39,7 +38,14 @@ class MachinehubController(Controller):
         @app.route("%s" % machine_route, method=['POST'])
         def use_machine(username, machinename, auth_user):
             machine_name = os.path.join(username, machinename)
-            file_url = machines_manager.work(machine_name, request.json)
+            json_info = None
+            machine_id = None
+            if request.content_type == 'application/json':
+                json_info = request.json
+            else:
+                uploaded_file = request.files.get("fileUpload")
+                machine_id, json_info = machines_manager.extract_zip(uploaded_file, machine_name)
+            file_url = machines_manager.work(machine_name, json_info, machine_id)
             return {'file_url': file_url,
                     'machine_name': machine_name,
                     'authoraize_user': username == auth_user}

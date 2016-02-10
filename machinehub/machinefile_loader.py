@@ -1,6 +1,6 @@
-from old_machinehub.common.errors import MachinehubException
 import os
 import re
+from machinehub.errors import MachinehubException
 
 
 def load_machinefile(machinefile_path):

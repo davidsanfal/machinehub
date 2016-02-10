@@ -1,5 +1,5 @@
 import re
-from old_machinehub.common.errors import MachinehubException
+from machinehub.errors import MachinehubException
 
 
 class ConfigParser(object):

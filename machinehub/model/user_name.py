@@ -1,5 +1,5 @@
 import re
-from old_machinehub.common.errors import InvalidNameException
+from machinehub.errors import InvalidNameException
 
 
 class UserName(str):

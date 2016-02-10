@@ -5,6 +5,7 @@ import os
 import zipfile
 from machinehub.config import MACHINES_FOLDER, MACHINEFILE
 import shutil
+from machinehub.sha import zip_sha1
 
 
 ALLOWED_EXTENSIONS = ['zip']
@@ -45,7 +46,27 @@ class FileService():
         else:
             return None
 
-    def extract_zip(self, file_path, auth_user):
+    def extract_zip_request(self, resource, dest):
+        if not resource:
+            return None
+        filename = resource.filename
+        file_path = os.path.join(dest, 'machine_input', filename)
+        try:
+            os.makedirs(os.path.join(dest, 'machine_input'))
+        except:
+            pass
+        resource.save(file_path)
+        machine_id = zip_sha1(file_path)
+        try:
+            os.makedirs(os.path.join(dest, 'input%s' % machine_id))
+        except:
+            pass
+        with zipfile.ZipFile(file_path, "r") as z:
+            z.extractall(os.path.join(dest, 'input%s' % machine_id))
+        os.remove(file_path)
+        return machine_id
+
+    def extract_zip_machine(self, file_path, auth_user):
         machine_name = None
         try:
             name, ext = os.path.splitext(os.path.basename(file_path))
@@ -57,7 +78,6 @@ class FileService():
                     _name, ext = os.path.splitext(files_in_zip[0])
                     if ext == '' and _name == '%s/' % name and \
                        all(s.startswith('%s/' % name) for s in files_in_zip):
-                        print(os.path.join(MACHINES_FOLDER, auth_user))
                         z.extractall(os.path.join(MACHINES_FOLDER, auth_user))
                     elif '%s.py' % name in files_in_zip and MACHINEFILE in files_in_zip:
                         z.extractall(os.path.join(MACHINES_FOLDER, machine_name))
@@ -74,5 +94,5 @@ class FileService():
 
     def upload_machine(self, uploaded_file, dest, auth_user):
         file_path = self.save(uploaded_file, dest, ALLOWED_EXTENSIONS, auth_user)
-        machine_name = self.extract_zip(file_path, auth_user)
+        machine_name = self.extract_zip_machine(file_path, auth_user)
         return machine_name

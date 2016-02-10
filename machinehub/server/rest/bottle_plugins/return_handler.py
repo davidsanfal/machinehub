@@ -26,9 +26,9 @@ class ReturnHandlerPlugin(object):
             '''Capture possible exceptions to manage the return'''
             try:
                 # The encoding from browsers is utf-8, so we assume it
-#                 for key, value in kwargs.items():
-#                     if isinstance(value, str):
-#                         kwargs[key] = value.decode("utf-8")
+                # for key, value in kwargs.items():
+                # if isinstance(value, str):
+                #     kwargs[key] = value.decode("utf-8")
                 return callback(*args, **kwargs)  # kwargs has :xxx variables from url
             except HTTPResponse:
                 raise
