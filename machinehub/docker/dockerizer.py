@@ -1,8 +1,8 @@
 
 import os
 from subprocess import Popen, PIPE
-from machinehub.config import MACHINES_FOLDER, MACHINESOUT
 from jinja2 import Template
+from machinehub.config import MACHINES_FOLDER, MACHINESOUT
 
 
 Dockerfile_template = '''
@@ -55,4 +55,6 @@ def dockerize(machine, machine_id):
                     stdout=PIPE, stderr=PIPE)
     stdout, stderr = process.communicate()
 
-    print(stdout, stderr)
+    print(stdout.decode('utf-8'))
+    print('--------------------')
+    print(stderr.decode('utf-8'))
