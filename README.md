@@ -1,7 +1,7 @@
 <p align="center"><img src="docs/logo/machinehub.png" align="center"</p>
-<p align="center"><img src="docs/logo/bq-logo-human-right-technology.png" width="400" align="center">
+<p align="center"><img src="docs/logo/bq-logo-human-right-technology.png" width="400" align="center"></p>
 
-[![Documentation Status](https://readthedocs.org/projects/machinehub/badge/?version=latest)](https://readthedocs.org/projects/machinehub/?badge=latest) [![Python 3](https://img.shields.io/badge/python-3.x-brightgreen.svg)](https://www.python.org/downloads/)</p>
+[![Documentation Status](https://readthedocs.org/projects/machinehub/badge/?version=latest)](https://readthedocs.org/projects/machinehub/?badge=latest) [![Python 3](https://img.shields.io/badge/python-3.x-brightgreen.svg)](https://www.python.org/downloads/)
 
 # What is [machineHUB](docs/machinehub.pdf) ?
 
