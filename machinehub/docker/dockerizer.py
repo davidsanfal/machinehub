@@ -1,8 +1,8 @@
 
 import os
 from subprocess import Popen, PIPE
-from machinehub.config import MACHINES_FOLDER, MACHINESOUT
 from jinja2 import Template
+from machinehub.config import MACHINES_FOLDER, MACHINESOUT
 
 
 Dockerfile_template = '''
