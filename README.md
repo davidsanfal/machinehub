@@ -1,8 +1,7 @@
+<p align="center"><img src="docs/logo/machinehub.png" align="center"</p>
+<p align="center"><img src="docs/logo/bq-logo-human-right-technology.png" width="400" align="center">
 
-[![License](http://img.shields.io/:license-gpl-blue.svg?style=flat)](http://opensource.org/licenses/GPL-3.0) 
-[![Documentation Status](https://readthedocs.org/projects/machinehub/badge/?version=latest)](https://readthedocs.org/projects/machinehub/?badge=latest)
-[![Google Group](https://img.shields.io/badge/-Google%20Group-lightgrey.svg)](https://groups.google.com/forum/?hl=en#!forum/machinehub)
-[![Python 3](https://img.shields.io/badge/python-3.x-brightgreen.svg)](https://www.python.org/downloads/)
+[![Documentation Status](https://readthedocs.org/projects/machinehub/badge/?version=latest)](https://readthedocs.org/projects/machinehub/?badge=latest) [![Python 3](https://img.shields.io/badge/python-3.x-brightgreen.svg)](https://www.python.org/downloads/)</p>
 
 # What is [machineHUB](docs/machinehub.pdf) ?
 
@@ -69,34 +68,26 @@ cd machinehub
 gunicorn -w 8 -b 127.0.0.1:5000 launcher:app
 ```
 
-## Configure
+# How to use Machinehub
 
-### How to change the address or the admin info
+You can use the [Advanced REST client](https://chrome.google.com/webstore/detail/advanced-rest-client/hgmloofddffdnphfgcellkdfbfbjeloo) to test Machinehub. It is a Chorme extension with an easy REST client.
 
-Edit `~/.machinehub/machinehub.conf` yo chage the address, port, or the admin info.
+**Base URL http://0.0.0.0:5000/v1**
 
-```
-[server]
-host: 127.0.0.1
-port: 5000
-[users]
-admin: admin #user: password
-```
+| Call  | Type | Content-Type | Header | Payload | Info |
+| ------------- | ------------- | ------------- | ------------- | ------------- | ------------- |
+| /machine/{machinename}/{username} | PUT | multipart-form-data | Authorization: Bearer {AUTH_TOKEN} |{machine_name}.zip ||
+| /machine/{machinename}/{username} | GET |||||
+| /machine/{machinename}/{username} | POST | multipart-form-data | | input.zip ||
+| /machine/{machinename}/{username} | POST | application/json || Json with the machine input data ||
+| /machine/{machinename}/{username} | DELETE |  | Authorization: Bearer {AUTH_TOKEN} ||
+| /users/authenticate | GET || Authorization: Bearer {AUTH_TOKEN} ||http basic authentication. Return the AUTH_TOKEN|
+| /users/check_credentials | GET || Authorization: Bearer {AUTH_TOKEN} |||
 
-# Try Machinehub
+## License
 
-[localhost:5000](http://localhost:5000/)
+Machinehub is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/). Please read the LICENSE files for more details.
 
-![](docs/img/home.png)
-
-[localhost:5000/upload](http://localhost:5000/upload)
-
-![](docs/img/upload.png)
-
-Select all the machine .zip files.
-
-![](docs/img/files.png)
-
-Clic in the blue upload button and machinehub will redirect your browser to the home page with the machines. loaded
-![](docs/img/uploaded.png)
-
+<p align="center">
+<img src="docs/logo/by-sa.png" width="200" align = "center">
+</p>
