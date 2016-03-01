@@ -47,7 +47,17 @@ class MachineManager():
         machine_name = self.file_service.upload_machine(uploaded_file,
                                                         MACHINES_FOLDER,
                                                         auth_user)
-        create_image(machine_name, [], [], 'freecad')
+        machinefile_path = os.path.join(MACHINES_FOLDER, machine_name, MACHINEFILE)
+        machinefile = load_machinefile(machinefile_path)
+        try:
+            os.makedirs(os.path.join(MACHINES_FOLDER, machine_name, MACHINESOUT))
+        except:
+            pass
+        create_image(machine_name,
+                     machinefile.sysdeps,
+                     machinefile.pipdeps,
+                     machinefile.engine,
+                     machinefile.python_version)
         return True
 
     def read(self, machine_name):
