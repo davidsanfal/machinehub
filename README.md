@@ -47,11 +47,11 @@ sudo -H pip install -r requirements.txt
 
 ## Execute
 
-Build the machinehub docker image to use as base to the machine images.
+Build all the machinehub docker images to use as base to the machine images.
 
 ```bash
-cd machinehub/machinehub/docker/
-docker build -t machinehub .
+cd machinehub/machinehub/docker/dockerfiles/{engine}
+docker build -t machinehub/{engine} .
 ```
 
 Launch the webapp.
