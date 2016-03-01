@@ -30,7 +30,7 @@ def kill_and_remove(ctr_name):
             raise RuntimeError(p.stderr.read())
 
 
-def create_image(machine, system_deps, python_deps, engine):
+def create_image(machine, system_deps, python_deps, engine, py_version):
     dockerfile_path = os.path.join(MACHINES_FOLDER, machine, 'Dockerfile')
     dockerfile = Template(Dockerfile_template)
     with open(dockerfile_path, 'w+') as f:
