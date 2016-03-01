@@ -63,7 +63,6 @@ fn = load_machine(machine_path)
 with open(os.path.join(builder_path, 'machine', 'input%s.json' % machine_id)) as f:
     values = json.load(f)
     for val in values.keys():
-        print val, values[val], type(values[val])
         if type(values[val]) == 'unicode':
             values[val] = str(values[val])
     real_file_path = os.path.join(builder_path,

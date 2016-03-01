@@ -47,7 +47,7 @@ class MachineManager():
         machine_name = self.file_service.upload_machine(uploaded_file,
                                                         MACHINES_FOLDER,
                                                         auth_user)
-        create_image(machine_name, [], [])
+        create_image(machine_name, [], [], 'freecad')
         return True
 
     def read(self, machine_name):
