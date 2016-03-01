@@ -6,18 +6,18 @@ from machinehub.config import MACHINES_FOLDER, MACHINESOUT
 
 
 Dockerfile_template = '''
-FROM machinehub
+FROM machinehub/{{ engine }}
 
 ENV OUTPUT_FOLDER {{ output }}
 RUN apt-get -y update
 RUN apt-get -y upgrade
 
 {% for sysdep in system_deps %}
-RUN apt-get install -y sysdep
+RUN apt-get install -y {{ sysdep }}
 {% endfor %}
 
 {% for pydep in python_deps %}
-RUN pip install pydep
+RUN pip install {{ pydep }}
 {% endfor %}
 '''
 
@@ -30,11 +30,12 @@ def kill_and_remove(ctr_name):
             raise RuntimeError(p.stderr.read())
 
 
-def create_image(machine, system_deps, python_deps):
+def create_image(machine, system_deps, python_deps, engine):
     dockerfile_path = os.path.join(MACHINES_FOLDER, machine, 'Dockerfile')
     dockerfile = Template(Dockerfile_template)
     with open(dockerfile_path, 'w+') as f:
         f.write(dockerfile.render(output=MACHINESOUT,
+                                  engine=engine,
                                   system_deps=system_deps,
                                   python_deps=python_deps))
     process = Popen(['docker', 'build', '-t', machine, '.'],
