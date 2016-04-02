@@ -1,5 +1,4 @@
 <p align="center"><img src="doc/logo/machinehub.png" align="center"</p>
-<p align="center"><img src="doc/logo/bq-logo-human-right-technology.png" width="400" align="center"></p>
 
 [![Documentation Status](https://readthedocs.org/projects/machinehub/badge/?version=latest)](https://readthedocs.org/projects/machinehub/?badge=latest) [![Python 3](https://img.shields.io/badge/python-3.x-brightgreen.svg)](https://www.python.org/downloads/)
 
@@ -85,6 +84,8 @@ You can use the [Advanced REST client](https://chrome.google.com/webstore/detail
 | /users/check_credentials | GET || Authorization: Bearer {AUTH_TOKEN} |||
 
 ## License
+
+Sponsored by BQ untill March 2016
 
 Machinehub is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](http://creativecommons.org/licenses/by-sa/4.0/). Please read the LICENSE files for more details.
 
